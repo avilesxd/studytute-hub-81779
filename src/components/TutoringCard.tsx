@@ -1,4 +1,4 @@
-import { Star, Clock, Users, DollarSign, BookOpen } from "lucide-react";
+import { Star, Clock, Users, DollarSign, BookOpen, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ interface TutoringCardProps {
   title: string;
   tutor: string;
   schedule: string;
+  room: string;
   availableSpots: number;
   totalSpots: number;
   price: number;
@@ -21,6 +22,7 @@ const TutoringCard = ({
   title,
   tutor,
   schedule,
+  room,
   availableSpots,
   totalSpots,
   price,
@@ -64,6 +66,11 @@ const TutoringCard = ({
         <div className="flex items-center gap-2 text-sm">
           <Clock className="h-4 w-4 text-primary" />
           <span className="text-foreground/80">{schedule}</span>
+        </div>
+
+        <div className="flex items-center gap-2 text-sm">
+          <MapPin className="h-4 w-4 text-primary" />
+          <span className="text-foreground/80">Sala {room}</span>
         </div>
 
         <div className="flex items-center gap-2 text-sm">

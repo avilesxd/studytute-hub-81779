@@ -61,8 +61,20 @@ const BecomeATutorDialog = () => {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="room">Sala *</Label>
+              <Input id="room" placeholder="205" required />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="spots">Cupos Disponibles *</Label>
               <Input id="spots" type="number" placeholder="10" required />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="price">Precio (CLP) *</Label>
+              <Input id="price" type="number" placeholder="3000" required />
             </div>
           </div>
 
