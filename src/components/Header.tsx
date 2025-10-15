@@ -12,9 +12,9 @@ const Header = () => {
             </Button>
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-primary-foreground rounded-full flex items-center justify-center">
-                <span className="text-primary font-bold text-lg">ST</span>
+                <span className="text-primary font-bold text-lg">UA</span>
               </div>
-              <span className="font-semibold text-lg hidden sm:block">Santo Tomás</span>
+              <span className="font-semibold text-lg hidden sm:block">Universidad Arica</span>
             </div>
           </div>
 
