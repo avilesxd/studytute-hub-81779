@@ -1,99 +1,49 @@
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import TutoringCard from "@/components/TutoringCard";
 import BecomeATutorDialog from "@/components/BecomeATutorDialog";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import mathTutoringImage from "@/assets/math-tutoring.jpg";
-import physicsTutoringImage from "@/assets/physics-tutoring.jpg";
-import programmingTutoringImage from "@/assets/programming-tutoring.jpg";
 
 const Tutoring = () => {
-  const tutoringData = [
-    {
-      id: 1,
-      title: "Cálculo Diferencial e Integral",
-      tutor: "María González",
-      schedule: "Lunes y Miércoles 15:00-17:00",
-      room: "205",
-      availableSpots: 5,
-      totalSpots: 10,
-      price: 3000,
-      materials: ["Calculadora científica", "Cuaderno", "Lápiz"],
-      topics: ["Derivadas", "Integrales", "Límites", "Series"],
-      rating: 5,
-      image: mathTutoringImage,
-    },
-    {
-      id: 2,
-      title: "Física General y Mecánica",
-      tutor: "Carlos Rodríguez",
-      schedule: "Martes y Jueves 16:00-18:00",
-      room: "308",
-      availableSpots: 8,
-      totalSpots: 12,
-      price: 3500,
-      materials: ["Calculadora", "Formularios", "Guías de ejercicios"],
-      topics: ["Cinemática", "Dinámica", "Trabajo y energía", "Momento"],
-      rating: 4,
-      image: physicsTutoringImage,
-    },
-    {
-      id: 3,
-      title: "Programación en Python",
-      tutor: "Ana Martínez",
-      schedule: "Viernes 14:00-17:00",
-      room: "405",
-      availableSpots: 3,
-      totalSpots: 8,
-      price: 4000,
-      materials: ["Laptop", "Python instalado", "Editor de código"],
-      topics: ["Sintaxis básica", "Estructuras de datos", "POO", "Algoritmos"],
-      rating: 5,
-      image: programmingTutoringImage,
-    },
-    {
-      id: 4,
-      title: "Química Orgánica",
-      tutor: "Pedro Silva",
-      schedule: "Miércoles y Viernes 10:00-12:00",
-      room: "508",
-      availableSpots: 6,
-      totalSpots: 10,
-      price: 3200,
-      materials: ["Tabla periódica", "Modelo molecular", "Cuaderno"],
-      topics: ["Hidrocarburos", "Grupos funcionales", "Reacciones", "Nomenclatura"],
-      rating: 4,
-      image: physicsTutoringImage,
-    },
-    {
-      id: 5,
-      title: "Álgebra Lineal",
-      tutor: "Laura Fernández",
-      schedule: "Lunes 18:00-20:00",
-      room: "302",
-      availableSpots: 7,
-      totalSpots: 15,
-      price: 2500,
-      materials: ["Calculadora", "Formularios", "Apuntes"],
-      topics: ["Matrices", "Determinantes", "Vectores", "Sistemas lineales"],
-      rating: 5,
-      image: mathTutoringImage,
-    },
-    {
-      id: 6,
-      title: "Inglés Avanzado",
-      tutor: "John Smith",
-      schedule: "Sábados 09:00-11:00",
-      room: "401",
-      availableSpots: 4,
-      totalSpots: 8,
-      price: 4500,
-      materials: ["Libro de texto", "Diccionario", "Audífonos"],
-      topics: ["Gramática avanzada", "Conversación", "Writing", "Listening"],
-      rating: 5,
-      image: programmingTutoringImage,
-    },
-  ];
+  const [tutorings, setTutorings] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    fetchTutorings();
+  }, []);
+
+  const fetchTutorings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("tutorings")
+        .select("*")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setTutorings(data || []);
+    } catch (error: any) {
+      toast.error("Error al cargar las tutorías", {
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filteredTutorings = tutorings.filter((tutoring) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      tutoring.title.toLowerCase().includes(query) ||
+      tutoring.tutor_name.toLowerCase().includes(query) ||
+      tutoring.topics.some((topic: string) => topic.toLowerCase().includes(query))
+    );
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -118,15 +68,45 @@ const Tutoring = () => {
             <Input
               placeholder="Buscar tutorías por tema, materia o tutor..."
               className="pl-10 bg-card shadow-sm border-border"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tutoringData.map((tutoring) => (
-            <TutoringCard key={tutoring.id} {...tutoring} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Cargando tutorías...</p>
+          </div>
+        ) : filteredTutorings.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              {searchQuery
+                ? "No se encontraron tutorías que coincidan con tu búsqueda"
+                : "No hay tutorías disponibles en este momento"}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTutorings.map((tutoring) => (
+              <TutoringCard
+                key={tutoring.id}
+                id={tutoring.id}
+                title={tutoring.title}
+                tutor={tutoring.tutor_name}
+                schedule={tutoring.schedule}
+                room={tutoring.room}
+                availableSpots={tutoring.available_spots}
+                totalSpots={tutoring.total_spots}
+                price={tutoring.price}
+                materials={tutoring.materials}
+                topics={tutoring.topics}
+                rating={5}
+                image={mathTutoringImage}
+              />
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
