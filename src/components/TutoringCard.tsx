@@ -2,6 +2,7 @@ import { Star, Clock, Users, DollarSign, BookOpen, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface TutoringCardProps {
   id: number;
@@ -16,6 +17,7 @@ interface TutoringCardProps {
   topics: string[];
   rating: number;
   image: string;
+  creatorUserId: string;
 }
 
 const TutoringCard = ({
@@ -30,7 +32,10 @@ const TutoringCard = ({
   topics,
   rating,
   image,
+  creatorUserId,
 }: TutoringCardProps) => {
+  const { user } = useAuth();
+  const isOwnTutoring = user?.id === creatorUserId;
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, index) => (
       <Star
@@ -114,9 +119,15 @@ const TutoringCard = ({
       </CardContent>
 
       <CardFooter className="pt-0">
-        <Button className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity shadow-sm">
-          Inscribirse
-        </Button>
+        {isOwnTutoring ? (
+          <div className="w-full text-center text-sm text-muted-foreground py-2">
+            Esta es tu tutoría
+          </div>
+        ) : (
+          <Button className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity shadow-sm">
+            Inscribirse
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
