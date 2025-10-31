@@ -81,7 +81,7 @@ const BecomeATutorDialog = () => {
       <DialogTrigger asChild>
         <Button className="bg-gradient-to-r from-secondary to-accent hover:opacity-90 transition-opacity shadow-md">
           <UserPlus className="mr-2 h-5 w-5" />
-          Postular como Tutor
+          Crear tutoria
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
