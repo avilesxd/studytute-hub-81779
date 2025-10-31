@@ -64,8 +64,7 @@ const Tutoring = () => {
               </p>
             </div>
             <div className="flex gap-3">
-              <ApplyAsTutorDialog />
-              {isApprovedTutor && <BecomeATutorDialog />}
+              {isApprovedTutor ? <BecomeATutorDialog /> : <ApplyAsTutorDialog />}
             </div>
           </div>
 

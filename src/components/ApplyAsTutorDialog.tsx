@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { GraduationCap } from "lucide-react";
+import { PenSquare } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -73,7 +73,7 @@ const ApplyAsTutorDialog = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-          <GraduationCap className="mr-2 h-5 w-5" />
+          <PenSquare className="mr-2 h-5 w-5" />
           Postular como Tutor
         </Button>
       </DialogTrigger>
