@@ -11,7 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import mathTutoringImage from "@/assets/math-tutoring.jpg";
 
 const Tutoring = () => {
-  const { isApprovedTutor } = useAuth();
+  const { isApprovedTutor, user } = useAuth();
   const [tutorings, setTutorings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,7 +64,12 @@ const Tutoring = () => {
               </p>
             </div>
             <div className="flex gap-3">
-              {isApprovedTutor ? <BecomeATutorDialog /> : <ApplyAsTutorDialog />}
+              {user &&
+                (isApprovedTutor ? (
+                  <BecomeATutorDialog />
+                ) : (
+                  <ApplyAsTutorDialog />
+                ))}
             </div>
           </div>
 
