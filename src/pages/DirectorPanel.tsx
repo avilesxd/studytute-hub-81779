@@ -115,6 +115,36 @@ const DirectorPanel = () => {
     }
   };
 
+  const handleDeleteTutoring = async (id: string) => {
+    try {
+      const { error } = await supabase.from("tutorings").delete().eq("id", id);
+
+      if (error) throw error;
+
+      toast.success("Tutoría eliminada exitosamente");
+      fetchPendingTutorings();
+    } catch (error: any) {
+      toast.error("Error al eliminar la tutoría", {
+        description: error.message,
+      });
+    }
+  };
+
+  const handleDeleteApplication = async (id: string) => {
+    try {
+      const { error } = await supabase.from("tutor_applications").delete().eq("id", id);
+
+      if (error) throw error;
+
+      toast.success("Postulación eliminada exitosamente");
+      fetchApplications();
+    } catch (error: any) {
+      toast.error("Error al eliminar la postulación", {
+        description: error.message,
+      });
+    }
+  };
+
   if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -207,23 +237,32 @@ const DirectorPanel = () => {
         )}
       </CardContent>
 
-      {tutoring.status === "pending" && (
-        <CardFooter className="gap-2">
-          <Button
-            onClick={() => handleUpdateStatus(tutoring.id, "approved")}
-            className="flex-1 bg-gradient-to-r from-primary to-secondary"
-          >
-            Aprobar
-          </Button>
-          <Button
-            onClick={() => handleUpdateStatus(tutoring.id, "rejected")}
-            variant="destructive"
-            className="flex-1"
-          >
-            Rechazar
-          </Button>
-        </CardFooter>
-      )}
+      <CardFooter className="gap-2">
+        {tutoring.status === "pending" && (
+          <>
+            <Button
+              onClick={() => handleUpdateStatus(tutoring.id, "approved")}
+              className="flex-1 bg-gradient-to-r from-primary to-secondary"
+            >
+              Aprobar
+            </Button>
+            <Button
+              onClick={() => handleUpdateStatus(tutoring.id, "rejected")}
+              variant="destructive"
+              className="flex-1"
+            >
+              Rechazar
+            </Button>
+          </>
+        )}
+        <Button
+          onClick={() => handleDeleteTutoring(tutoring.id)}
+          variant="destructive"
+          className="flex-1"
+        >
+          Eliminar
+        </Button>
+      </CardFooter>
     </Card>
   );
 
@@ -279,23 +318,32 @@ const DirectorPanel = () => {
         </div>
       </CardContent>
 
-      {application.status === "pending" && (
-        <CardFooter className="gap-2">
-          <Button
-            onClick={() => handleUpdateApplicationStatus(application.id, "approved")}
-            className="flex-1 bg-gradient-to-r from-primary to-secondary"
-          >
-            Aprobar
-          </Button>
-          <Button
-            onClick={() => handleUpdateApplicationStatus(application.id, "rejected")}
-            variant="destructive"
-            className="flex-1"
-          >
-            Rechazar
-          </Button>
-        </CardFooter>
-      )}
+      <CardFooter className="gap-2">
+        {application.status === "pending" && (
+          <>
+            <Button
+              onClick={() => handleUpdateApplicationStatus(application.id, "approved")}
+              className="flex-1 bg-gradient-to-r from-primary to-secondary"
+            >
+              Aprobar
+            </Button>
+            <Button
+              onClick={() => handleUpdateApplicationStatus(application.id, "rejected")}
+              variant="destructive"
+              className="flex-1"
+            >
+              Rechazar
+            </Button>
+          </>
+        )}
+        <Button
+          onClick={() => handleDeleteApplication(application.id)}
+          variant="destructive"
+          className="flex-1"
+        >
+          Eliminar
+        </Button>
+      </CardFooter>
     </Card>
   );
 

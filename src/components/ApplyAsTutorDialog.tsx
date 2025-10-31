@@ -89,12 +89,12 @@ const ApplyAsTutorDialog = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nombre Completo *</Label>
-              <Input id="name" name="name" placeholder="Juan Pérez" required />
+              <Input id="name" name="name" placeholder="Juan Pérez" required defaultValue={user?.user_metadata?.name ?? ""} disabled />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="email">Correo Electrónico *</Label>
-              <Input id="email" name="email" type="email" placeholder="juan@ejemplo.com" required />
+              <Input id="email" name="email" type="email" placeholder="juan@ejemplo.com" required defaultValue={user?.email ?? ""} disabled />
             </div>
           </div>
 

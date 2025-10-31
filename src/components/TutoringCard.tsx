@@ -4,8 +4,11 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
 interface TutoringCardProps {
-  id: number;
+  id: string;
   title: string;
   tutor: string;
   schedule: string;
@@ -17,10 +20,11 @@ interface TutoringCardProps {
   topics: string[];
   rating: number;
   image: string;
-  creatorUserId: string;
+  userId: string;
 }
 
 const TutoringCard = ({
+  id,
   title,
   tutor,
   schedule,
@@ -32,10 +36,69 @@ const TutoringCard = ({
   topics,
   rating,
   image,
-  creatorUserId,
+  userId,
 }: TutoringCardProps) => {
   const { user } = useAuth();
-  const isOwnTutoring = user?.id === creatorUserId;
+  const isOwnTutoring = user?.id === userId;
+
+  const handleEnroll = async () => {
+    if (!user) {
+      toast.error("Debes iniciar sesión para inscribirte");
+      return;
+    }
+
+    if (availableSpots <= 0) {
+      toast.error("No hay cupos disponibles para esta tutoría");
+      return;
+    }
+
+    try {
+      // Check if user is already enrolled
+      const { data: existingEnrollment, error: existingEnrollmentError } = await supabase
+        .from("tutoring_enrollments")
+        .select("id")
+        .eq("tutoring_id", id)
+        .eq("user_id", user.id)
+        .single();
+
+      if (existingEnrollmentError && existingEnrollmentError.code !== "PGRST116") {
+        throw existingEnrollmentError;
+      }
+
+      if (existingEnrollment) {
+        toast.error("Ya estás inscrito en esta tutoría");
+        return;
+      }
+
+      // Create a new enrollment
+      const { error: enrollmentError } = await supabase
+        .from("tutoring_enrollments")
+        .insert({ tutoring_id: id, user_id: user.id });
+
+      if (enrollmentError) {
+        throw enrollmentError;
+      }
+
+      // Decrement available spots
+      const { error: updateError } = await supabase
+        .from("tutorings")
+        .update({ available_spots: availableSpots - 1 })
+        .eq("id", id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      toast.success("¡Inscripción exitosa!");
+      // Optionally, you can update the UI to reflect the new number of available spots
+      // This would require lifting the state up to the parent component (Tutoring.tsx)
+    } catch (error: any) {
+      toast.error("Error al inscribirse", {
+        description: error.message,
+      });
+    }
+  };
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, index) => (
       <Star
@@ -124,7 +187,10 @@ const TutoringCard = ({
             Esta es tu tutoría
           </div>
         ) : (
-          <Button className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity shadow-sm">
+          <Button
+            className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity shadow-sm"
+            onClick={handleEnroll}
+          >
             Inscribirse
           </Button>
         )}

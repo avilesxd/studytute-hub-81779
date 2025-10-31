@@ -108,7 +108,7 @@ const Tutoring = () => {
                 topics={tutoring.topics}
                 rating={5}
                 image={mathTutoringImage}
-                creatorUserId={tutoring.user_id}
+                userId={tutoring.user_id}
               />
             ))}
           </div>
