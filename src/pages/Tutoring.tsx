@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import TutoringCard from "@/components/TutoringCard";
 import BecomeATutorDialog from "@/components/BecomeATutorDialog";
+import ApplyAsTutorDialog from "@/components/ApplyAsTutorDialog";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,7 +61,10 @@ const Tutoring = () => {
                 Encuentra el apoyo académico que necesitas o comparte tu conocimiento
               </p>
             </div>
-            <BecomeATutorDialog />
+            <div className="flex gap-3">
+              <ApplyAsTutorDialog />
+              <BecomeATutorDialog />
+            </div>
           </div>
 
           <div className="relative max-w-md">

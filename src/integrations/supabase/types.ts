@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      tutor_applications: {
+        Row: {
+          created_at: string
+          email: string
+          experience: string
+          id: string
+          motivation: string
+          name: string
+          phone: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["tutor_application_status"]
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          experience: string
+          id?: string
+          motivation: string
+          name: string
+          phone?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["tutor_application_status"]
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          experience?: string
+          id?: string
+          motivation?: string
+          name?: string
+          phone?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["tutor_application_status"]
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tutorings: {
         Row: {
           available_spots: number
@@ -107,6 +155,7 @@ export type Database = {
     }
     Enums: {
       app_role: "director" | "student"
+      tutor_application_status: "pending" | "approved" | "rejected"
       tutoring_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
@@ -236,6 +285,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["director", "student"],
+      tutor_application_status: ["pending", "approved", "rejected"],
       tutoring_status: ["pending", "approved", "rejected"],
     },
   },
