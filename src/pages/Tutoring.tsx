@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 import mathTutoringImage from "@/assets/math-tutoring.jpg";
 
 const Tutoring = () => {
+  const { isApprovedTutor } = useAuth();
   const [tutorings, setTutorings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,7 +65,7 @@ const Tutoring = () => {
             </div>
             <div className="flex gap-3">
               <ApplyAsTutorDialog />
-              <BecomeATutorDialog />
+              {isApprovedTutor && <BecomeATutorDialog />}
             </div>
           </div>
 
