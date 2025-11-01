@@ -148,13 +148,6 @@ const Header = () => {
               size="icon"
               className="text-primary-foreground hover:bg-primary-foreground/10 hidden sm:flex"
             >
-              <Search className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-primary-foreground hover:bg-primary-foreground/10 hidden sm:flex"
-            >
               <Calendar className="h-5 w-5" />
             </Button>
             <Button
