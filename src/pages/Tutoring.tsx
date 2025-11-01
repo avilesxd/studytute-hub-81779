@@ -114,6 +114,7 @@ const Tutoring = () => {
                 rating={5}
                 image={mathTutoringImage}
                 userId={tutoring.user_id}
+                onEnrollment={fetchTutorings}
               />
             ))}
           </div>

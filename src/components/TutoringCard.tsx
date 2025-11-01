@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useState, useEffect } from "react";
 
 interface TutoringCardProps {
   id: string;
@@ -21,6 +21,7 @@ interface TutoringCardProps {
   rating: number;
   image: string;
   userId: string;
+  onEnrollment: () => void;
 }
 
 const TutoringCard = ({
@@ -37,9 +38,32 @@ const TutoringCard = ({
   rating,
   image,
   userId,
+  onEnrollment,
 }: TutoringCardProps) => {
   const { user } = useAuth();
   const isOwnTutoring = user?.id === userId;
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [currentAvailableSpots, setCurrentAvailableSpots] =
+    useState(availableSpots);
+
+  useEffect(() => {
+    const checkEnrollment = async () => {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("tutoring_enrollments")
+        .select("id")
+        .eq("tutoring_id", id)
+        .eq("user_id", user.id)
+        .single();
+
+      if (data && !error) {
+        setIsEnrolled(true);
+      }
+    };
+
+    checkEnrollment();
+  }, [user, id]);
 
   const handleEnroll = async () => {
     if (!user) {
@@ -47,53 +71,27 @@ const TutoringCard = ({
       return;
     }
 
-    if (availableSpots <= 0) {
+    if (currentAvailableSpots <= 0) {
       toast.error("No hay cupos disponibles para esta tutoría");
       return;
     }
 
     try {
-      // Check if user is already enrolled
-      const { data: existingEnrollment, error: existingEnrollmentError } = await supabase
-        .from("tutoring_enrollments")
-        .select("id")
-        .eq("tutoring_id", id)
-        .eq("user_id", user.id)
-        .single();
+      const { error } = await supabase.rpc('enroll_in_tutoring', {
+        p_tutoring_id: id,
+        p_user_id: user.id,
+      });
 
-      if (existingEnrollmentError && existingEnrollmentError.code !== "PGRST116") {
-        throw existingEnrollmentError;
+      if (error) {
+        throw error;
       }
 
-      if (existingEnrollment) {
-        toast.error("Ya estás inscrito en esta tutoría");
-        return;
-      }
-
-      // Create a new enrollment
-      const { error: enrollmentError } = await supabase
-        .from("tutoring_enrollments")
-        .insert({ tutoring_id: id, user_id: user.id });
-
-      if (enrollmentError) {
-        throw enrollmentError;
-      }
-
-      // Decrement available spots
-      const { error: updateError } = await supabase
-        .from("tutorings")
-        .update({ available_spots: availableSpots - 1 })
-        .eq("id", id);
-
-      if (updateError) {
-        throw updateError;
-      }
-
-      toast.success("¡Inscripción exitosa!");
-      // Optionally, you can update the UI to reflect the new number of available spots
-      // This would require lifting the state up to the parent component (Tutoring.tsx)
+      toast.success('¡Inscripción exitosa!');
+      setIsEnrolled(true);
+      setCurrentAvailableSpots(currentAvailableSpots - 1);
+      onEnrollment();
     } catch (error: any) {
-      toast.error("Error al inscribirse", {
+      toast.error('Error al inscribirse', {
         description: error.message,
       });
     }
@@ -144,7 +142,7 @@ const TutoringCard = ({
         <div className="flex items-center gap-2 text-sm">
           <Users className="h-4 w-4 text-primary" />
           <span className="text-foreground/80">
-            {availableSpots} de {totalSpots} cupos disponibles
+            {currentAvailableSpots} de {totalSpots} cupos disponibles
           </span>
         </div>
 
@@ -186,12 +184,17 @@ const TutoringCard = ({
           <div className="w-full text-center text-sm text-muted-foreground py-2">
             Esta es tu tutoría
           </div>
+        ) : isEnrolled ? (
+          <Button disabled className="w-full bg-green-500 text-white">
+            Ya estás inscrito
+          </Button>
         ) : (
           <Button
             className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity shadow-sm"
             onClick={handleEnroll}
+            disabled={currentAvailableSpots <= 0}
           >
-            Inscribirse
+            {currentAvailableSpots <= 0 ? "No hay cupos" : "Inscribirse"}
           </Button>
         )}
       </CardFooter>

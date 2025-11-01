@@ -25,7 +25,7 @@ const ApplyAsTutorDialog = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       toast.error("Debes iniciar sesión para postular como tutor");
       navigate("/auth");
@@ -72,16 +72,22 @@ const ApplyAsTutorDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+        <Button
+          variant="outline"
+          className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+        >
           <PenSquare className="mr-2 h-5 w-5" />
           Postular como Tutor
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-primary">Postular como Tutor</DialogTitle>
+          <DialogTitle className="text-2xl text-primary">
+            Postular como Tutor
+          </DialogTitle>
           <DialogDescription>
-            Completa el formulario para postular como tutor. El director revisará tu solicitud.
+            Completa el formulario para postular como tutor. El director
+            revisará tu solicitud.
           </DialogDescription>
         </DialogHeader>
 
@@ -89,24 +95,49 @@ const ApplyAsTutorDialog = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nombre Completo *</Label>
-              <Input id="name" name="name" placeholder="Juan Pérez" required defaultValue={user?.user_metadata?.name ?? ""} disabled />
+              <Input
+                id="name"
+                name="name"
+                placeholder="Juan Pérez"
+                required
+                defaultValue={user?.user_metadata?.name ?? ""}
+                readOnly
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="email">Correo Electrónico *</Label>
-              <Input id="email" name="email" type="email" placeholder="juan@ejemplo.com" required defaultValue={user?.email ?? ""} disabled />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="juan@ejemplo.com"
+                required
+                defaultValue={user?.email ?? ""}
+                readOnly
+              />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="phone">Teléfono</Label>
-              <Input id="phone" name="phone" type="tel" placeholder="+56 9 1234 5678" />
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                placeholder="+56 9 1234 5678"
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="subject">Materia/Tema *</Label>
-              <Input id="subject" name="subject" placeholder="Matemáticas, Física, Programación..." required />
+              <Input
+                id="subject"
+                name="subject"
+                placeholder="Matemáticas, Física, Programación..."
+                required
+              />
             </div>
           </div>
 
@@ -133,10 +164,19 @@ const ApplyAsTutorDialog = () => {
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isLoading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={isLoading}
+            >
               Cancelar
             </Button>
-            <Button type="submit" className="bg-gradient-to-r from-primary to-secondary" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="bg-gradient-to-r from-primary to-secondary"
+              disabled={isLoading}
+            >
               {isLoading ? "Enviando..." : "Enviar Postulación"}
             </Button>
           </div>
