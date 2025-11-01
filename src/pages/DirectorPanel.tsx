@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Clock, MapPin, Users, DollarSign, BookOpen, Mail, Phone, GraduationCap } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
+import EnrolledStudentsDialog from "@/components/EnrolledStudentsDialog";
 
 type Tutoring = Database["public"]["Tables"]["tutorings"]["Row"];
 type TutorApplication = Database["public"]["Tables"]["tutor_applications"]["Row"];
@@ -254,6 +255,9 @@ const DirectorPanel = () => {
               Rechazar
             </Button>
           </>
+        )}
+        {tutoring.status === "approved" && (
+          <EnrolledStudentsDialog tutoringId={tutoring.id} />
         )}
         <Button
           onClick={() => handleDeleteTutoring(tutoring.id)}
