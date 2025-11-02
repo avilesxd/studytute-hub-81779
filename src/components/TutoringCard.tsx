@@ -19,6 +19,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
+import { FormatDate } from "@/utils/formatDate";
 
 interface TutoringCardProps {
   id: string;
@@ -146,9 +147,7 @@ const TutoringCard = ({
       <CardContent className="space-y-3 pb-4">
         <div className="flex items-center gap-2 text-sm">
           <Calendar className="h-4 w-4 text-primary" />
-          <span className="text-foreground/80">
-            {new Date(date).toLocaleDateString()}
-          </span>
+          <span className="text-foreground/80">{FormatDate(date)}</span>
         </div>
 
         <div className="flex items-center gap-2 text-sm">
