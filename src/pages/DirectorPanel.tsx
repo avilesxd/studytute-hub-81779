@@ -14,10 +14,14 @@ import EnrolledStudentsDialog from "@/components/EnrolledStudentsDialog";
 type Tutoring = Database["public"]["Tables"]["tutorings"]["Row"];
 type TutorApplication = Database["public"]["Tables"]["tutor_applications"]["Row"];
 
+type TutoringWithProfile = Tutoring & {
+  profiles: { full_name: string } | null;
+};
+
 const DirectorPanel = () => {
   const navigate = useNavigate();
   const { isDirector, isLoading: authLoading, user } = useAuth();
-  const [tutorings, setTutorings] = useState<Tutoring[]>([]);
+  const [tutorings, setTutorings] = useState<TutoringWithProfile[]>([]);
   const [applications, setApplications] = useState<TutorApplication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,11 +43,11 @@ const DirectorPanel = () => {
     try {
       const { data, error } = await supabase
         .from("tutorings")
-        .select("*")
+        .select("*, profiles(full_name)")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setTutorings(data || []);
+      setTutorings(data as TutoringWithProfile[] || []);
     } catch (error: any) {
       toast.error("Error al cargar las tutorías", {
         description: error.message,
@@ -165,14 +169,14 @@ const DirectorPanel = () => {
   const approvedApplications = applications.filter((a) => a.status === "approved");
   const rejectedApplications = applications.filter((a) => a.status === "rejected");
 
-  const renderTutoringCard = (tutoring: Tutoring) => (
+  const renderTutoringCard = (tutoring: TutoringWithProfile) => (
     <Card key={tutoring.id} className="overflow-hidden">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="text-xl mb-1">{tutoring.title}</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Por: {tutoring.tutor_name}
+              Por: {tutoring.profiles?.full_name || 'Tutor no encontrado'}
             </p>
           </div>
           <Badge

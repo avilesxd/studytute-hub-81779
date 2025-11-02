@@ -77,7 +77,6 @@ export type Database = {
           title: string
           topics: string[]
           total_spots: number
-          tutor_name: string
           updated_at: string | null
           user_id: string
         }
@@ -95,7 +94,6 @@ export type Database = {
           title: string
           topics: string[]
           total_spots: number
-          tutor_name: string
           updated_at?: string | null
           user_id: string
         }
@@ -113,7 +111,6 @@ export type Database = {
           title?: string
           topics?: string[]
           total_spots?: number
-          tutor_name?: string
           updated_at?: string | null
           user_id?: string
         }

@@ -24,7 +24,7 @@ const Tutoring = () => {
     try {
       const { data, error } = await supabase
         .from("tutorings")
-        .select("*")
+        .select("*, profiles(full_name)")
         .eq("status", "approved")
         .order("created_at", { ascending: false });
 
@@ -41,9 +41,11 @@ const Tutoring = () => {
 
   const filteredTutorings = tutorings.filter((tutoring) => {
     const query = searchQuery.toLowerCase();
+    const tutorName = (tutoring.profiles as any)?.full_name || '';
+
     return (
       tutoring.title.toLowerCase().includes(query) ||
-      tutoring.tutor_name.toLowerCase().includes(query) ||
+      tutorName.toLowerCase().includes(query) ||
       tutoring.topics.some((topic: string) => topic.toLowerCase().includes(query))
     );
   });
@@ -103,7 +105,7 @@ const Tutoring = () => {
                 key={tutoring.id}
                 id={tutoring.id}
                 title={tutoring.title}
-                tutor={tutoring.tutor_name}
+                tutor={(tutoring.profiles as any)?.full_name || 'Tutor no encontrado'}
                 schedule={tutoring.schedule}
                 room={tutoring.room}
                 availableSpots={tutoring.available_spots}
