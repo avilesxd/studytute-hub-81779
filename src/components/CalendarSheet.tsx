@@ -7,10 +7,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface CalendarEntry {
   tutoring_id: string;
@@ -20,30 +18,10 @@ interface CalendarEntry {
 }
 
 export const CalendarSheet = () => {
-  const { user } = useAuth();
   const [events, setEvents] = useState<CalendarEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date()
   );
-
-  useEffect(() => {
-    const fetchCalendar = async () => {
-      if (!user) return;
-
-      const { data, error } = await supabase.rpc("get_user_calendar", {
-        p_user_id: user.id,
-      });
-
-      if (error) {
-        console.error("Error fetching calendar:", error);
-        return;
-      }
-
-      setEvents(data);
-    };
-
-    fetchCalendar();
-  }, [user]);
 
   const eventsOnSelectedDate = events.filter(
     (event) =>
