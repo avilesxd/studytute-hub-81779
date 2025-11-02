@@ -23,7 +23,7 @@ const EnrolledStudentsDialog = ({ tutoringId }: { tutoringId: string }) => {
   const fetchEnrollments = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.rpc("get_enrolled_students", {
+      const { data, error } = await supabase.rpc("get_enrolled_students_v2", {
         p_tutoring_id: tutoringId,
       });
 
