@@ -1,5 +1,6 @@
-import { Menu, Search, Bell, Calendar, LogOut, Shield } from "lucide-react";
+import { Menu, Bell, LogOut, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CalendarSheet } from "@/components/CalendarSheet";
 import {
   Sheet,
   SheetContent,
@@ -143,13 +144,7 @@ const Header = () => {
                 <span className="hidden sm:inline">Panel Director</span>
               </Button>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-primary-foreground hover:bg-primary-foreground/10 hidden sm:flex"
-            >
-              <Calendar className="h-5 w-5" />
-            </Button>
+            {user && <CalendarSheet />}
             <Button
               variant="ghost"
               size="icon"

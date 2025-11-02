@@ -12,20 +12,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
+import { CalendarIcon, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { format } from "date-fns";
+import { Calendar } from "./ui/calendar";
+import { cn } from "@/lib/utils";
 
 const BecomeATutorDialog = () => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [date, setDate] = useState<Date>();
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       toast.error("Debes iniciar sesión para postular como tutor");
       navigate("/auth");
@@ -40,8 +45,12 @@ const BecomeATutorDialog = () => {
     const room = formData.get("room") as string;
     const spots = parseInt(formData.get("spots") as string);
     const price = parseInt(formData.get("price") as string);
-    const topics = (formData.get("topics") as string).split(",").map(t => t.trim());
-    const materials = (formData.get("materials") as string).split(",").map(m => m.trim());
+    const topics = (formData.get("topics") as string)
+      .split(",")
+      .map((t) => t.trim());
+    const materials = (formData.get("materials") as string)
+      .split(",")
+      .map((m) => m.trim());
     const description = formData.get("description") as string;
 
     try {
@@ -56,6 +65,7 @@ const BecomeATutorDialog = () => {
         materials,
         topics,
         description: description || null,
+        date: date?.toISOString(),
       });
 
       if (error) throw error;
@@ -84,9 +94,13 @@ const BecomeATutorDialog = () => {
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-primary">Postular como Tutor</DialogTitle>
+          <DialogTitle className="text-2xl text-primary">
+            Crear la Tutoría
+          </DialogTitle>
           <DialogDescription>
-            Comparte tu conocimiento y ayuda a otros estudiantes. Completa el formulario para publicar tu tutoría.
+            Comparte tu conocimiento y ayuda a otros estudiantes. Completa el
+            formulario para publicar tu tutoría. El director revisará tu
+            solicitud antes de que esté disponible.
           </DialogDescription>
         </DialogHeader>
 
@@ -94,12 +108,52 @@ const BecomeATutorDialog = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="title">Título de la Tutoría *</Label>
-              <Input id="title" name="title" placeholder="Ej: Cálculo Diferencial e Integral" required />
+              <Input
+                id="title"
+                name="title"
+                placeholder="Ej: Cálculo Diferencial e Integral"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="date">Fecha de la tutoría *</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? (
+                      format(date, "PPP")
+                    ) : (
+                      <span>Selecciona una fecha</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="schedule">Horario *</Label>
-              <Input id="schedule" name="schedule" placeholder="Lunes y Miércoles 15:00-17:00" required />
+              <Input
+                id="schedule"
+                name="schedule"
+                placeholder="Lunes y Miércoles 15:00-17:00"
+                required
+              />
             </div>
           </div>
 
@@ -111,17 +165,31 @@ const BecomeATutorDialog = () => {
 
             <div className="space-y-2">
               <Label htmlFor="spots">Cupos Disponibles *</Label>
-              <Input id="spots" name="spots" type="number" placeholder="10" required />
+              <Input
+                id="spots"
+                name="spots"
+                type="number"
+                placeholder="10"
+                required
+              />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="price">Precio (CLP) *</Label>
-            <Input id="price" name="price" type="number" placeholder="3000" required />
+            <Input
+              id="price"
+              name="price"
+              type="number"
+              placeholder="3000"
+              required
+            />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="topics">Temas a Tratar (separados por comas) *</Label>
+            <Label htmlFor="topics">
+              Temas a Tratar (separados por comas) *
+            </Label>
             <Textarea
               id="topics"
               name="topics"
@@ -132,7 +200,9 @@ const BecomeATutorDialog = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="materials">Materiales Necesarios (separados por comas) *</Label>
+            <Label htmlFor="materials">
+              Materiales Necesarios (separados por comas) *
+            </Label>
             <Textarea
               id="materials"
               name="materials"
@@ -153,10 +223,19 @@ const BecomeATutorDialog = () => {
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isLoading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={isLoading}
+            >
               Cancelar
             </Button>
-            <Button type="submit" className="bg-gradient-to-r from-primary to-secondary" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="bg-gradient-to-r from-primary to-secondary"
+              disabled={isLoading}
+            >
               {isLoading ? "Enviando..." : "Enviar Postulación"}
             </Button>
           </div>
