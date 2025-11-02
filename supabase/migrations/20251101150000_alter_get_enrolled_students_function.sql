@@ -6,7 +6,7 @@ AS $$
 BEGIN
   RETURN QUERY
   SELECT
-    u.raw_user_meta_data->>'full_name' AS full_name,
+    COALESCE(u.raw_user_meta_data->>'full_name', u.raw_user_meta_data->>'name') AS full_name,
     u.email
   FROM
     public.tutoring_enrollments te
