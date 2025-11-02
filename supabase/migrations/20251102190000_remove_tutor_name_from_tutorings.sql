@@ -1,0 +1,1 @@
+ALTER TABLE public.tutorings DROP COLUMN tutor_name;
