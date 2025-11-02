@@ -52,7 +52,7 @@ const Header = () => {
       </a>
       {user ? (
         <span className="text-primary-foreground/90">
-          {user.user_metadata?.name || user.email}
+          {user.user_metadata?.full_name || user.email}
         </span>
       ) : (
         <a
@@ -161,7 +161,7 @@ const Header = () => {
               <>
                 <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center ml-2">
                   <span className="text-primary-foreground font-semibold">
-                    {user.user_metadata?.name?.charAt(0) ||
+                    {user.user_metadata?.full_name?.charAt(0) ||
                       user.email?.charAt(0) ||
                       "U"}
                   </span>

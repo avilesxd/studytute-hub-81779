@@ -43,7 +43,7 @@ const BecomeATutorDialog = () => {
     const topics = (formData.get("topics") as string).split(",").map(t => t.trim());
     const materials = (formData.get("materials") as string).split(",").map(m => m.trim());
     const description = formData.get("description") as string;
-    const tutorName = user.user_metadata?.name || user.email?.split("@")[0] || "Tutor";
+    const tutorName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Tutor";
 
     try {
       const { error } = await supabase.from("tutorings").insert({

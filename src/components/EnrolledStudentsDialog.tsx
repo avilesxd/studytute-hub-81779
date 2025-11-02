@@ -1,4 +1,3 @@
-
 import {
   Dialog,
   DialogContent,
@@ -10,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { Card, CardContent } from "./ui/card";
 
 type Student = {
   full_name: string;
@@ -54,13 +54,16 @@ const EnrolledStudentsDialog = ({ tutoringId }: { tutoringId: string }) => {
         ) : students.length === 0 ? (
           <p>No hay alumnos inscritos en esta tutoría.</p>
         ) : (
-          <ul>
+          <div className="grid gap-4">
             {students.map((student, index) => (
-              <li key={index}>
-                {student.full_name} ({student.email})
-              </li>
+              <Card key={index}>
+                <CardContent className="p-4">
+                  <p className="font-semibold">{student.full_name}</p>
+                  <p className="text-sm text-gray-500">{student.email}</p>
+                </CardContent>
+              </Card>
             ))}
-          </ul>
+          </div>
         )}
       </DialogContent>
     </Dialog>

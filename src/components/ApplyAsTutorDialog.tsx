@@ -100,7 +100,7 @@ const ApplyAsTutorDialog = () => {
                 name="name"
                 placeholder="Juan Pérez"
                 required
-                defaultValue={user?.user_metadata?.name ?? ""}
+                defaultValue={user?.user_metadata?.full_name ?? ""}
                 readOnly
               />
             </div>
