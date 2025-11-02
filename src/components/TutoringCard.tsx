@@ -1,6 +1,19 @@
-import { Star, Clock, Users, DollarSign, BookOpen, MapPin } from "lucide-react";
+import {
+  Star,
+  Clock,
+  Users,
+  DollarSign,
+  BookOpen,
+  MapPin,
+  Calendar,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +35,7 @@ interface TutoringCardProps {
   image: string;
   userId: string;
   onEnrollment: () => void;
+  date: string;
 }
 
 const TutoringCard = ({
@@ -39,6 +53,7 @@ const TutoringCard = ({
   image,
   userId,
   onEnrollment,
+  date,
 }: TutoringCardProps) => {
   const { user } = useAuth();
   const isOwnTutoring = user?.id === userId;
@@ -77,7 +92,7 @@ const TutoringCard = ({
     }
 
     try {
-      const { error } = await supabase.rpc('enroll_in_tutoring', {
+      const { error } = await supabase.rpc("enroll_in_tutoring", {
         p_tutoring_id: id,
         p_user_id: user.id,
       });
@@ -86,12 +101,12 @@ const TutoringCard = ({
         throw error;
       }
 
-      toast.success('¡Inscripción exitosa!');
+      toast.success("¡Inscripción exitosa!");
       setIsEnrolled(true);
       setCurrentAvailableSpots(currentAvailableSpots - 1);
       onEnrollment();
     } catch (error: any) {
-      toast.error('Error al inscribirse', {
+      toast.error("Error al inscribirse", {
         description: error.message,
       });
     }
@@ -129,6 +144,13 @@ const TutoringCard = ({
       </CardHeader>
 
       <CardContent className="space-y-3 pb-4">
+        <div className="flex items-center gap-2 text-sm">
+          <Calendar className="h-4 w-4 text-primary" />
+          <span className="text-foreground/80">
+            {new Date(date).toLocaleDateString()}
+          </span>
+        </div>
+
         <div className="flex items-center gap-2 text-sm">
           <Clock className="h-4 w-4 text-primary" />
           <span className="text-foreground/80">{schedule}</span>

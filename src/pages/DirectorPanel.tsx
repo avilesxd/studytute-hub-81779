@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Clock, MapPin, Users, DollarSign, BookOpen, Mail, Phone, GraduationCap } from "lucide-react";
+import { Clock, MapPin, Users, DollarSign, BookOpen, Mail, Phone, GraduationCap, Calendar } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
 import EnrolledStudentsDialog from "@/components/EnrolledStudentsDialog";
 
@@ -198,6 +198,10 @@ const DirectorPanel = () => {
       </CardHeader>
 
       <CardContent className="space-y-3">
+        <div className="flex items-center gap-2 text-sm">
+          <Calendar className="h-4 w-4 text-primary" />
+          <span>{new Date(tutoring.date).toLocaleDateString()}</span>
+        </div>
         <div className="flex items-center gap-2 text-sm">
           <Clock className="h-4 w-4 text-primary" />
           <span>{tutoring.schedule}</span>
