@@ -10,6 +10,8 @@ import Tutoring from "./pages/Tutoring";
 import Auth from "./pages/Auth";
 import DirectorPanel from "./pages/DirectorPanel";
 import NotFound from "./pages/NotFound";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -21,10 +23,47 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Layout><Index /></Layout>} />
-            <Route path="/tutorias" element={<Layout><Tutoring /></Layout>} />
-            <Route path="/director" element={<Layout><DirectorPanel /></Layout>} />
-            
+            <Route
+              path="/"
+              element={
+                <Layout>
+                  <Index />
+                </Layout>
+              }
+            />
+            <Route
+              path="/tutorias"
+              element={
+                <Layout>
+                  <Tutoring />
+                </Layout>
+              }
+            />
+            <Route
+              path="/director"
+              element={
+                <Layout>
+                  <DirectorPanel />
+                </Layout>
+              }
+            />
+            <Route
+              path="/terminos-de-servicio"
+              element={
+                <Layout>
+                  <TermsOfService />
+                </Layout>
+              }
+            />
+            <Route
+              path="/politica-de-privacidad"
+              element={
+                <Layout>
+                  <PrivacyPolicy />
+                </Layout>
+              }
+            />
+
             {/* Routes without Layout */}
             <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
