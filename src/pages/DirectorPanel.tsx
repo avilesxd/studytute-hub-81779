@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Clock, MapPin, Users, DollarSign, BookOpen, Mail, Phone, GraduationCap, Calendar } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
-import EnrolledStudentsDialog from "@/components/EnrolledStudentsDialog";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { TutoringReviewCard } from "@/components/TutoringReviewCard";
+import { ApplicationReviewCard } from "@/components/ApplicationReviewCard";
 
 type Tutoring = Database["public"]["Tables"]["tutorings"]["Row"];
 type TutorApplication = Database["public"]["Tables"]["tutor_applications"]["Row"];
@@ -18,139 +16,115 @@ type TutoringWithProfile = Tutoring & {
   profiles: { full_name: string } | null;
 };
 
+// Data Fetching functions
+const fetchTutorings = async () => {
+  const { data, error } = await supabase
+    .from("tutorings")
+    .select("*, profiles(full_name)")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data as TutoringWithProfile[] || [];
+};
+
+const fetchApplications = async () => {
+  const { data, error } = await supabase
+    .from("tutor_applications")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data || [];
+};
+
 const DirectorPanel = () => {
   const navigate = useNavigate();
   const { isDirector, isLoading: authLoading, user } = useAuth();
-  const [tutorings, setTutorings] = useState<TutoringWithProfile[]>([]);
-  const [applications, setApplications] = useState<TutorApplication[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!authLoading && !isDirector) {
-      toast.error("No tienes permisos para acceder a esta página");
-      navigate("/");
-    }
-  }, [isDirector, authLoading, navigate]);
+  // Queries
+  const { data: tutorings = [], isLoading: tutoringsLoading, isError: tutoringsError, error: tutoringsErrorMsg } = useQuery<TutoringWithProfile[]>({ 
+    queryKey: ["tutorings"], 
+    queryFn: fetchTutorings, 
+    enabled: !!isDirector 
+  });
+  const { data: applications = [], isLoading: applicationsLoading, isError: applicationsError, error: applicationsErrorMsg } = useQuery<TutorApplication[]>({ 
+    queryKey: ["applications"], 
+    queryFn: fetchApplications, 
+    enabled: !!isDirector 
+  });
 
-  useEffect(() => {
-    if (isDirector) {
-      fetchPendingTutorings();
-      fetchApplications();
-    }
-  }, [isDirector]);
-
-  const fetchPendingTutorings = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("tutorings")
-        .select("*, profiles(full_name)")
-        .order("created_at", { ascending: false });
-
+  // Mutations
+  const updateTutoringStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: Database["public"]["Enums"]["tutoring_status"]; }) => {
+      const { error } = await supabase.from("tutorings").update({ status }).eq("id", id);
       if (error) throw error;
-      setTutorings(data as TutoringWithProfile[] || []);
-    } catch (error: any) {
-      toast.error("Error al cargar las tutorías", {
-        description: error.message,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    onSuccess: (_, { status }) => {
+      toast.success(status === "approved" ? "Tutoría aprobada" : "Tutoría rechazada");
+      queryClient.invalidateQueries({ queryKey: ["tutorings"] });
+    },
+    onError: (error: any) => {
+      toast.error("Error al actualizar el estado", { description: error.message });
+    },
+  });
 
-  const fetchApplications = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("tutor_applications")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setApplications(data || []);
-    } catch (error: any) {
-      toast.error("Error al cargar las postulaciones", {
-        description: error.message,
-      });
-    }
-  };
-
-  const handleUpdateStatus = async (id: string, status: Database["public"]["Enums"]["tutoring_status"]) => {
-    try {
-      const { error } = await supabase
-        .from("tutorings")
-        .update({ status })
-        .eq("id", id);
-
-      if (error) throw error;
-
-      toast.success(
-        status === "approved" ? "Tutoría aprobada" : "Tutoría rechazada"
-      );
-      fetchPendingTutorings();
-    } catch (error: any) {
-      toast.error("Error al actualizar el estado", {
-        description: error.message,
-      });
-    }
-  };
-
-  const handleUpdateApplicationStatus = async (
-    id: string, 
-    status: Database["public"]["Enums"]["tutor_application_status"]
-  ) => {
-    try {
-      const { error } = await supabase
-        .from("tutor_applications")
-        .update({ 
-          status,
-          reviewed_by: user?.id,
-          reviewed_at: new Date().toISOString()
-        })
-        .eq("id", id);
-
-      if (error) throw error;
-
-      toast.success(
-        status === "approved" ? "Postulación aprobada" : "Postulación rechazada"
-      );
-      fetchApplications();
-    } catch (error: any) {
-      toast.error("Error al actualizar el estado", {
-        description: error.message,
-      });
-    }
-  };
-
-  const handleDeleteTutoring = async (id: string) => {
-    try {
+  const deleteTutoring = useMutation({
+    mutationFn: async (id: string) => {
       const { error } = await supabase.from("tutorings").delete().eq("id", id);
-
       if (error) throw error;
-
+    },
+    onSuccess: () => {
       toast.success("Tutoría eliminada exitosamente");
-      fetchPendingTutorings();
-    } catch (error: any) {
-      toast.error("Error al eliminar la tutoría", {
-        description: error.message,
-      });
-    }
-  };
+      queryClient.invalidateQueries({ queryKey: ["tutorings"] });
+    },
+    onError: (error: any) => {
+      toast.error("Error al eliminar la tutoría", { description: error.message });
+    },
+  });
 
-  const handleDeleteApplication = async (id: string) => {
-    try {
-      const { error } = await supabase.from("tutor_applications").delete().eq("id", id);
-
+  const updateApplicationStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: Database["public"]["Enums"]["tutor_application_status"]; }) => {
+      const { error } = await supabase.from("tutor_applications").update({ status, reviewed_by: user?.id, reviewed_at: new Date().toISOString() }).eq("id", id);
       if (error) throw error;
+    },
+    onSuccess: (_, { status }) => {
+      toast.success(status === "approved" ? "Postulación aprobada" : "Postulación rechazada");
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    },
+    onError: (error: any) => {
+      toast.error("Error al actualizar el estado", { description: error.message });
+    },
+  });
 
+  const deleteApplication = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("tutor_applications").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
       toast.success("Postulación eliminada exitosamente");
-      fetchApplications();
-    } catch (error: any) {
-      toast.error("Error al eliminar la postulación", {
-        description: error.message,
-      });
-    }
-  };
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    },
+    onError: (error: any) => {
+      toast.error("Error al eliminar la postulación", { description: error.message });
+    },
+  });
 
-  if (authLoading || isLoading) {
+  // Authorization Effect
+  if (!authLoading && !isDirector) {
+    toast.error("No tienes permisos para acceder a esta página");
+    navigate("/");
+  }
+
+  // Memoized data filtering
+  const pendingTutorings = useMemo(() => tutorings.filter((t) => t.status === "pending"), [tutorings]);
+  const approvedTutorings = useMemo(() => tutorings.filter((t) => t.status === "approved"), [tutorings]);
+  const rejectedTutorings = useMemo(() => tutorings.filter((t) => t.status === "rejected"), [tutorings]);
+
+  const pendingApplications = useMemo(() => applications.filter((a) => a.status === "pending"), [applications]);
+  const approvedApplications = useMemo(() => applications.filter((a) => a.status === "approved"), [applications]);
+  const rejectedApplications = useMemo(() => applications.filter((a) => a.status === "rejected"), [applications]);
+
+  if (authLoading || tutoringsLoading || applicationsLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -161,203 +135,16 @@ const DirectorPanel = () => {
     );
   }
 
-  const pendingTutorings = tutorings.filter((t) => t.status === "pending");
-  const approvedTutorings = tutorings.filter((t) => t.status === "approved");
-  const rejectedTutorings = tutorings.filter((t) => t.status === "rejected");
-
-  const pendingApplications = applications.filter((a) => a.status === "pending");
-  const approvedApplications = applications.filter((a) => a.status === "approved");
-  const rejectedApplications = applications.filter((a) => a.status === "rejected");
-
-  const renderTutoringCard = (tutoring: TutoringWithProfile) => (
-    <Card key={tutoring.id} className="overflow-hidden">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-xl mb-1">{tutoring.title}</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Por: {tutoring.profiles?.full_name || 'Tutor no encontrado'}
-            </p>
-          </div>
-          <Badge
-            variant={
-              tutoring.status === "pending"
-                ? "secondary"
-                : tutoring.status === "approved"
-                ? "default"
-                : "destructive"
-            }
-          >
-            {tutoring.status === "pending"
-              ? "Pendiente"
-              : tutoring.status === "approved"
-              ? "Aprobada"
-              : "Rechazada"}
-          </Badge>
+  if (tutoringsError || applicationsError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8 text-center">
+          <p className="text-red-500">Error al cargar los datos: {tutoringsErrorMsg?.message || applicationsErrorMsg?.message}</p>
         </div>
-      </CardHeader>
-
-      <CardContent className="space-y-3">
-        <div className="flex items-center gap-2 text-sm">
-          <Calendar className="h-4 w-4 text-primary" />
-          <span>{new Date(tutoring.date).toLocaleDateString()}</span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <Clock className="h-4 w-4 text-primary" />
-          <span>{tutoring.schedule}</span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <MapPin className="h-4 w-4 text-primary" />
-          <span>Sala {tutoring.room}</span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <Users className="h-4 w-4 text-primary" />
-          <span>
-            {tutoring.available_spots} de {tutoring.total_spots} cupos
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <DollarSign className="h-4 w-4 text-primary" />
-          <span className="font-semibold">
-            ${tutoring.price.toLocaleString()} CLP
-          </span>
-        </div>
-
-        <div className="flex items-start gap-2 text-sm">
-          <BookOpen className="h-4 w-4 text-primary mt-0.5" />
-          <div className="flex-1">
-            <p className="text-muted-foreground mb-1 text-xs">Temas:</p>
-            <div className="flex flex-wrap gap-1">
-              {tutoring.topics.map((topic, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  {topic}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {tutoring.description && (
-          <div className="pt-2 border-t">
-            <p className="text-sm text-muted-foreground">
-              {tutoring.description}
-            </p>
-          </div>
-        )}
-      </CardContent>
-
-      <CardFooter className="gap-2">
-        {tutoring.status === "pending" && (
-          <>
-            <Button
-              onClick={() => handleUpdateStatus(tutoring.id, "approved")}
-              className="flex-1 bg-gradient-to-r from-primary to-secondary"
-            >
-              Aprobar
-            </Button>
-            <Button
-              onClick={() => handleUpdateStatus(tutoring.id, "rejected")}
-              variant="destructive"
-              className="flex-1"
-            >
-              Rechazar
-            </Button>
-          </>
-        )}
-        {tutoring.status === "approved" && (
-          <EnrolledStudentsDialog tutoringId={tutoring.id} />
-        )}
-        <Button
-          onClick={() => handleDeleteTutoring(tutoring.id)}
-          variant="destructive"
-          className="flex-1"
-        >
-          Eliminar
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-
-  const renderApplicationCard = (application: TutorApplication) => (
-    <Card key={application.id} className="overflow-hidden">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-xl mb-1">{application.name}</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              {application.subject}
-            </p>
-          </div>
-          <Badge
-            variant={
-              application.status === "pending"
-                ? "secondary"
-                : application.status === "approved"
-                ? "default"
-                : "destructive"
-            }
-          >
-            {application.status === "pending"
-              ? "Pendiente"
-              : application.status === "approved"
-              ? "Aprobada"
-              : "Rechazada"}
-          </Badge>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-3">
-        <div className="flex items-center gap-2 text-sm">
-          <Mail className="h-4 w-4 text-primary" />
-          <span>{application.email}</span>
-        </div>
-        {application.phone && (
-          <div className="flex items-center gap-2 text-sm">
-            <Phone className="h-4 w-4 text-primary" />
-            <span>{application.phone}</span>
-          </div>
-        )}
-        <div className="flex items-start gap-2 text-sm">
-          <GraduationCap className="h-4 w-4 text-primary mt-0.5" />
-          <div className="flex-1">
-            <p className="text-muted-foreground mb-1 text-xs">Experiencia:</p>
-            <p className="text-sm">{application.experience}</p>
-          </div>
-        </div>
-        <div className="pt-2 border-t">
-          <p className="text-muted-foreground mb-1 text-xs">Motivación:</p>
-          <p className="text-sm">{application.motivation}</p>
-        </div>
-      </CardContent>
-
-      <CardFooter className="gap-2">
-        {application.status === "pending" && (
-          <>
-            <Button
-              onClick={() => handleUpdateApplicationStatus(application.id, "approved")}
-              className="flex-1 bg-gradient-to-r from-primary to-secondary"
-            >
-              Aprobar
-            </Button>
-            <Button
-              onClick={() => handleUpdateApplicationStatus(application.id, "rejected")}
-              variant="destructive"
-              className="flex-1"
-            >
-              Rechazar
-            </Button>
-          </>
-        )}
-        <Button
-          onClick={() => handleDeleteApplication(application.id)}
-          variant="destructive"
-          className="flex-1"
-        >
-          Eliminar
-        </Button>
-      </CardFooter>
-    </Card>
-  );
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -379,7 +166,7 @@ const DirectorPanel = () => {
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {pendingApplications.map(renderApplicationCard)}
+                {pendingApplications.map(app => <ApplicationReviewCard key={app.id} application={app} updateStatusMutation={updateApplicationStatus} deleteMutation={deleteApplication} />)}
               </div>
             )}
           </section>
@@ -394,7 +181,7 @@ const DirectorPanel = () => {
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {pendingTutorings.map(renderTutoringCard)}
+                {pendingTutorings.map(tutoring => <TutoringReviewCard key={tutoring.id} tutoring={tutoring} updateStatusMutation={updateTutoringStatus} deleteMutation={deleteTutoring} />)}
               </div>
             )}
           </section>
@@ -407,7 +194,7 @@ const DirectorPanel = () => {
               <p className="text-muted-foreground">No hay tutorías aprobadas</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {approvedTutorings.map(renderTutoringCard)}
+                {approvedTutorings.map(tutoring => <TutoringReviewCard key={tutoring.id} tutoring={tutoring} updateStatusMutation={updateTutoringStatus} deleteMutation={deleteTutoring} />)}
               </div>
             )}
           </section>
@@ -422,7 +209,7 @@ const DirectorPanel = () => {
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {rejectedTutorings.map(renderTutoringCard)}
+                {rejectedTutorings.map(tutoring => <TutoringReviewCard key={tutoring.id} tutoring={tutoring} updateStatusMutation={updateTutoringStatus} deleteMutation={deleteTutoring} />)}
               </div>
             )}
           </section>
@@ -437,7 +224,7 @@ const DirectorPanel = () => {
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {approvedApplications.map(renderApplicationCard)}
+                {approvedApplications.map(app => <ApplicationReviewCard key={app.id} application={app} updateStatusMutation={updateApplicationStatus} deleteMutation={deleteApplication} />)}
               </div>
             )}
           </section>
@@ -452,7 +239,7 @@ const DirectorPanel = () => {
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {rejectedApplications.map(renderApplicationCard)}
+                {rejectedApplications.map(app => <ApplicationReviewCard key={app.id} application={app} updateStatusMutation={updateApplicationStatus} deleteMutation={deleteApplication} />)}
               </div>
             )}
           </section>

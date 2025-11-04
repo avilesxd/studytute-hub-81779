@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import TutoringCard from "@/components/TutoringCard";
 import BecomeATutorDialog from "@/components/BecomeATutorDialog";
@@ -6,49 +6,59 @@ import ApplyAsTutorDialog from "@/components/ApplyAsTutorDialog";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import mathTutoringImage from "@/assets/math-tutoring.jpg";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+const fetchTutorings = async () => {
+  const { data, error } = await supabase
+    .from("tutorings")
+    .select("*, profiles(full_name)")
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+};
 
 const Tutoring = () => {
   const { isApprovedTutor, user } = useAuth();
-  const [tutorings, setTutorings] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    fetchTutorings();
-  }, []);
-
-  const fetchTutorings = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("tutorings")
-        .select("*, profiles(full_name)")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setTutorings(data || []);
-    } catch (error: any) {
-      toast.error("Error al cargar las tutorías", {
-        description: error.message,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    data: tutorings = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["tutorings"],
+    queryFn: fetchTutorings,
+  });
 
   const filteredTutorings = tutorings.filter((tutoring) => {
     const query = searchQuery.toLowerCase();
-    const tutorName = (tutoring.profiles as any)?.full_name || '';
+    const tutorName = (tutoring.profiles as any)?.full_name || "";
 
     return (
       tutoring.title.toLowerCase().includes(query) ||
       tutorName.toLowerCase().includes(query) ||
-      tutoring.topics.some((topic: string) => topic.toLowerCase().includes(query))
+      tutoring.topics.some((topic: string) =>
+        topic.toLowerCase().includes(query)
+      )
     );
   });
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8 text-center">
+          <p className="text-red-500">Error al cargar las tutorías: {error.message}</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,7 +115,9 @@ const Tutoring = () => {
                 key={tutoring.id}
                 id={tutoring.id}
                 title={tutoring.title}
-                tutor={(tutoring.profiles as any)?.full_name || 'Tutor no encontrado'}
+                tutor={
+                  (tutoring.profiles as any)?.full_name || "Tutor no encontrado"
+                }
                 schedule={tutoring.schedule}
                 room={tutoring.room}
                 availableSpots={tutoring.available_spots}
@@ -116,7 +128,9 @@ const Tutoring = () => {
                 rating={5}
                 image={mathTutoringImage}
                 userId={tutoring.user_id}
-                onEnrollment={fetchTutorings}
+                onEnrollment={() =>
+                  queryClient.invalidateQueries({ queryKey: ["tutorings"] })
+                }
                 date={tutoring.date}
               />
             ))}
