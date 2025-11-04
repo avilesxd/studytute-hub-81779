@@ -8,6 +8,7 @@ import { Database } from "@/integrations/supabase/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { TutoringReviewCard } from "@/components/TutoringReviewCard";
 import { ApplicationReviewCard } from "@/components/ApplicationReviewCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Tutoring = Database["public"]["Tables"]["tutorings"]["Row"];
 type TutorApplication = Database["public"]["Tables"]["tutor_applications"]["Row"];
@@ -155,95 +156,106 @@ const DirectorPanel = () => {
           Panel del Director
         </h1>
 
-        <div className="space-y-8">
-          <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">
-              Postulaciones de Tutores Pendientes ({pendingApplications.length})
-            </h2>
-            {pendingApplications.length === 0 ? (
-              <p className="text-muted-foreground">
-                No hay postulaciones pendientes de revisión
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {pendingApplications.map(app => <ApplicationReviewCard key={app.id} application={app} updateStatusMutation={updateApplicationStatus} deleteMutation={deleteApplication} />)}
-              </div>
-            )}
-          </section>
+        <Tabs defaultValue="tutorings">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="tutorings">Tutorías</TabsTrigger>
+            <TabsTrigger value="applications">Postulaciones</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tutorings">
+            <div className="space-y-8 mt-6">
+              <section>
+                <h2 className="text-2xl font-bold text-foreground mb-4">
+                  Tutorías Pendientes ({pendingTutorings.length})
+                </h2>
+                {pendingTutorings.length === 0 ? (
+                  <p className="text-muted-foreground">
+                    No hay tutorías pendientes de aprobación
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {pendingTutorings.map(tutoring => <TutoringReviewCard key={tutoring.id} tutoring={tutoring} updateStatusMutation={updateTutoringStatus} deleteMutation={deleteTutoring} />)}
+                  </div>
+                )}
+              </section>
 
-          <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">
-              Tutorías Pendientes ({pendingTutorings.length})
-            </h2>
-            {pendingTutorings.length === 0 ? (
-              <p className="text-muted-foreground">
-                No hay tutorías pendientes de aprobación
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {pendingTutorings.map(tutoring => <TutoringReviewCard key={tutoring.id} tutoring={tutoring} updateStatusMutation={updateTutoringStatus} deleteMutation={deleteTutoring} />)}
-              </div>
-            )}
-          </section>
+              <section>
+                <h2 className="text-2xl font-bold text-foreground mb-4">
+                  Tutorías Aprobadas ({approvedTutorings.length})
+                </h2>
+                {approvedTutorings.length === 0 ? (
+                  <p className="text-muted-foreground">No hay tutorías aprobadas</p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {approvedTutorings.map(tutoring => <TutoringReviewCard key={tutoring.id} tutoring={tutoring} updateStatusMutation={updateTutoringStatus} deleteMutation={deleteTutoring} />)}
+                  </div>
+                )}
+              </section>
 
-          <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">
-              Tutorías Aprobadas ({approvedTutorings.length})
-            </h2>
-            {approvedTutorings.length === 0 ? (
-              <p className="text-muted-foreground">No hay tutorías aprobadas</p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {approvedTutorings.map(tutoring => <TutoringReviewCard key={tutoring.id} tutoring={tutoring} updateStatusMutation={updateTutoringStatus} deleteMutation={deleteTutoring} />)}
-              </div>
-            )}
-          </section>
+              <section>
+                <h2 className="text-2xl font-bold text-foreground mb-4">
+                  Tutorías Rechazadas ({rejectedTutorings.length})
+                </h2>
+                {rejectedTutorings.length === 0 ? (
+                  <p className="text-muted-foreground">
+                    No hay tutorías rechazadas
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {rejectedTutorings.map(tutoring => <TutoringReviewCard key={tutoring.id} tutoring={tutoring} updateStatusMutation={updateTutoringStatus} deleteMutation={deleteTutoring} />)}
+                  </div>
+                )}
+              </section>
+            </div>
+          </TabsContent>
+          <TabsContent value="applications">
+            <div className="space-y-8 mt-6">
+              <section>
+                <h2 className="text-2xl font-bold text-foreground mb-4">
+                  Postulaciones de Tutores Pendientes ({pendingApplications.length})
+                </h2>
+                {pendingApplications.length === 0 ? (
+                  <p className="text-muted-foreground">
+                    No hay postulaciones pendientes de revisión
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {pendingApplications.map(app => <ApplicationReviewCard key={app.id} application={app} updateStatusMutation={updateApplicationStatus} deleteMutation={deleteApplication} />)}
+                  </div>
+                )}
+              </section>
 
-          <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">
-              Tutorías Rechazadas ({rejectedTutorings.length})
-            </h2>
-            {rejectedTutorings.length === 0 ? (
-              <p className="text-muted-foreground">
-                No hay tutorías rechazadas
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {rejectedTutorings.map(tutoring => <TutoringReviewCard key={tutoring.id} tutoring={tutoring} updateStatusMutation={updateTutoringStatus} deleteMutation={deleteTutoring} />)}
-              </div>
-            )}
-          </section>
+              <section>
+                <h2 className="text-2xl font-bold text-foreground mb-4">
+                  Postulaciones Aprobadas ({approvedApplications.length})
+                </h2>
+                {approvedApplications.length === 0 ? (
+                  <p className="text-muted-foreground">
+                    No hay postulaciones aprobadas
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {approvedApplications.map(app => <ApplicationReviewCard key={app.id} application={app} updateStatusMutation={updateApplicationStatus} deleteMutation={deleteApplication} />)}
+                  </div>
+                )}
+              </section>
 
-          <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">
-              Postulaciones Aprobadas ({approvedApplications.length})
-            </h2>
-            {approvedApplications.length === 0 ? (
-              <p className="text-muted-foreground">
-                No hay postulaciones aprobadas
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {approvedApplications.map(app => <ApplicationReviewCard key={app.id} application={app} updateStatusMutation={updateApplicationStatus} deleteMutation={deleteApplication} />)}
-              </div>
-            )}
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">
-              Postulaciones Rechazadas ({rejectedApplications.length})
-            </h2>
-            {rejectedApplications.length === 0 ? (
-              <p className="text-muted-foreground">
-                No hay postulaciones rechazadas
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {rejectedApplications.map(app => <ApplicationReviewCard key={app.id} application={app} updateStatusMutation={updateApplicationStatus} deleteMutation={deleteApplication} />)}
-              </div>
-            )}
-          </section>
-        </div>
+              <section>
+                <h2 className="text-2xl font-bold text-foreground mb-4">
+                  Postulaciones Rechazadas ({rejectedApplications.length})
+                </h2>
+                {rejectedApplications.length === 0 ? (
+                  <p className="text-muted-foreground">
+                    No hay postulaciones rechazadas
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {rejectedApplications.map(app => <ApplicationReviewCard key={app.id} application={app} updateStatusMutation={updateApplicationStatus} deleteMutation={deleteApplication} />)}
+                  </div>
+                )}
+              </section>
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
