@@ -106,7 +106,7 @@ const Header = () => {
                   <div className="py-8">{renderNavLinks(true)}</div>
                   {isDirector && (
                     <Button
-                      variant="outline"
+                      variant="link"
                       className="w-full text-primary-foreground border-primary-foreground/50 hover:bg-primary-foreground/10 gap-2"
                       onClick={() => navigate("/director")}
                     >
