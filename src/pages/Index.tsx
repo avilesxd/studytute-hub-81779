@@ -1,4 +1,3 @@
-import Header from "@/components/Header";
 import CategoryCard from "@/components/CategoryCard";
 import { Users, GraduationCap, Calendar, FileText, CreditCard, BookOpen } from "lucide-react";
 import mathTutoringImage from "@/assets/math-tutoring.jpg";
@@ -58,33 +57,29 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <>
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-primary mb-2">Inicio</h1>
+        <p className="text-muted-foreground text-lg">
+          Bienvenido a tu portal estudiantil de Universidad Arica
+        </p>
+      </div>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-primary mb-2">Inicio</h1>
-          <p className="text-muted-foreground text-lg">
-            Bienvenido a tu portal estudiantil de Universidad Arica
-          </p>
-        </div>
+      <div className="mb-6">
+        <button className="text-accent hover:text-accent/80 transition-colors font-medium flex items-center gap-2">
+          VER TODAS LAS TARJETAS
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
 
-        <div className="mb-6">
-          <button className="text-accent hover:text-accent/80 transition-colors font-medium flex items-center gap-2">
-            VER TODAS LAS TARJETAS
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category) => (
-            <CategoryCard key={category.title} {...category} />
-          ))}
-        </div>
-      </main>
-    </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {categories.map((category) => (
+          <CategoryCard key={category.title} {...category} />
+        ))}
+      </div>
+    </>
   );
 };
 

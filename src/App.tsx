@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import Layout from "@/components/Layout";
 import Index from "./pages/Index";
 import Tutoring from "./pages/Tutoring";
 import Auth from "./pages/Auth";
@@ -20,11 +21,12 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/tutorias" element={<Tutoring />} />
+            <Route path="/" element={<Layout><Index /></Layout>} />
+            <Route path="/tutorias" element={<Layout><Tutoring /></Layout>} />
+            <Route path="/director" element={<Layout><DirectorPanel /></Layout>} />
+            
+            {/* Routes without Layout */}
             <Route path="/auth" element={<Auth />} />
-            <Route path="/director" element={<DirectorPanel />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
