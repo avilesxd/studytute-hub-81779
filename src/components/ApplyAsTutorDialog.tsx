@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { PenSquare } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +23,45 @@ const ApplyAsTutorDialog = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const [applicationStatus, setApplicationStatus] = useState<string | null>(
+    null
+  );
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+
+  useEffect(() => {
+    const checkApplicationStatus = async () => {
+      if (!user) {
+        setIsCheckingStatus(false);
+        return;
+      }
+
+      setIsCheckingStatus(true);
+      try {
+        const { data, error } = await supabase
+          .from("tutor_applications")
+          .select("status")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (error && error.code !== "PGRST116") {
+          throw error;
+        }
+
+        if (data) {
+          setApplicationStatus(data.status);
+        }
+      } catch (error: any) {
+        toast.error("Error al verificar el estado de la postulación", {
+          description: error.message,
+        });
+      } finally {
+        setIsCheckingStatus(false);
+      }
+    };
+
+    checkApplicationStatus();
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,25 +75,37 @@ const ApplyAsTutorDialog = () => {
     setIsLoading(true);
 
     const formData = new FormData(e.target as HTMLFormElement);
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
+    const name = user?.user_metadata?.full_name ?? "";
+    const email = user?.email ?? "";
     const phone = formData.get("phone") as string;
     const subject = formData.get("subject") as string;
     const experience = formData.get("experience") as string;
     const motivation = formData.get("motivation") as string;
+    const availability = ["Mañana", "Tarde", "Noche"].filter(
+      (time) => formData.get(time) === "on"
+    );
 
     try {
-      const { error } = await supabase.from("tutor_applications").insert({
-        user_id: user.id,
-        name,
-        email,
-        phone: phone || null,
-        subject,
-        experience,
-        motivation,
-      });
+      const { data, error } = await supabase
+        .from("tutor_applications")
+        .insert({
+          user_id: user.id,
+          name,
+          email,
+          phone: phone || null,
+          subject,
+          experience,
+          motivation,
+          availability: availability.length > 0 ? availability : null,
+        })
+        .select("status")
+        .single();
 
       if (error) throw error;
+
+      if (data) {
+        setApplicationStatus(data.status);
+      }
 
       toast.success("Postulación enviada exitosamente", {
         description: "El director revisará tu solicitud pronto.",
@@ -69,30 +121,43 @@ const ApplyAsTutorDialog = () => {
     }
   };
 
+  const getButtonText = () => {
+    if (isCheckingStatus) return "Cargando...";
+    if (applicationStatus === "pending") return "Postulación Pendiente";
+    if (applicationStatus === "approved") return "Postulación Aprobada";
+    if (applicationStatus === "rejected") return "Volver a Postular";
+    return "Postular como Tutor";
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
           className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+          disabled={
+            isCheckingStatus ||
+            applicationStatus === "pending" ||
+            applicationStatus === "approved"
+          }
         >
           <PenSquare className="mr-2 h-5 w-5" />
-          Postular como Tutor
+          {getButtonText()}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[95vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl text-primary">
-            Postular como Tutor
+            Formulario de Postulación para Tutor
           </DialogTitle>
           <DialogDescription>
-            Completa el formulario para postular como tutor. El director
-            revisará tu solicitud.
+            Completa tus datos para postular como tutor. El director revisará tu
+            solicitud a la brevedad.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-6 mt-4 pr-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="name">Nombre Completo *</Label>
               <Input
@@ -102,6 +167,7 @@ const ApplyAsTutorDialog = () => {
                 required
                 defaultValue={user?.user_metadata?.full_name ?? ""}
                 readOnly
+                className="bg-gray-100"
               />
             </div>
 
@@ -115,11 +181,12 @@ const ApplyAsTutorDialog = () => {
                 required
                 defaultValue={user?.email ?? ""}
                 readOnly
+                className="bg-gray-100"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="phone">Teléfono</Label>
               <Input
@@ -129,9 +196,8 @@ const ApplyAsTutorDialog = () => {
                 placeholder="+56 9 1234 5678"
               />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="subject">Materia/Tema *</Label>
+              <Label htmlFor="subject">Materia a Enseñar *</Label>
               <Input
                 id="subject"
                 name="subject"
@@ -142,42 +208,60 @@ const ApplyAsTutorDialog = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="experience">Experiencia Académica *</Label>
+            <Label>Disponibilidad</Label>
+            <div className="flex items-center space-x-4">
+              {["Mañana", "Tarde", "Noche"].map((time) => (
+                <div key={time} className="flex items-center space-x-2">
+                  <Checkbox id={time} name={time} />
+                  <Label htmlFor={time} className="font-normal">
+                    {time}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="experience">Experiencia Académica y Logros *</Label>
             <Textarea
               id="experience"
               name="experience"
-              placeholder="Cuéntanos sobre tus logros académicos, cursos aprobados con buenas calificaciones, proyectos relevantes..."
-              className="min-h-24"
+              placeholder="Describe tus logros académicos, cursos relevantes, proyectos destacados, etc."
+              className="min-h-28"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="motivation">¿Por qué quieres ser tutor? *</Label>
+            <Label htmlFor="motivation">
+              ¿Por qué quieres ser tutor en nuestra plataforma? *
+            </Label>
             <Textarea
               id="motivation"
               name="motivation"
-              placeholder="Comparte tu motivación para enseñar y ayudar a otros estudiantes..."
-              className="min-h-24"
+              placeholder="Comparte tu motivación para enseñar y cómo puedes ayudar a otros estudiantes."
+              className="min-h-28"
               required
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-4 pt-4">
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+              }}
               disabled={isLoading}
             >
               Cancelar
             </Button>
             <Button
               type="submit"
-              className="bg-gradient-to-r from-primary to-secondary"
+              className="bg-gradient-to-r from-primary to-secondary text-white"
               disabled={isLoading}
             >
-              {isLoading ? "Enviando..." : "Enviar Postulación"}
+              {isLoading ? "Enviando Postulación..." : "Enviar Postulación"}
             </Button>
           </div>
         </form>

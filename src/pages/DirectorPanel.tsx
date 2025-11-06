@@ -17,6 +17,10 @@ type TutoringWithProfile = Tutoring & {
   profiles: { full_name: string } | null;
 };
 
+type TutorApplicationWithProfile = TutorApplication & {
+  profiles: { full_name: string } | null;
+};
+
 // Data Fetching functions
 const fetchTutorings = async () => {
   const { data, error } = await supabase
@@ -30,10 +34,10 @@ const fetchTutorings = async () => {
 const fetchApplications = async () => {
   const { data, error } = await supabase
     .from("tutor_applications")
-    .select("*")
+    .select("*, profiles(full_name)")
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return data || [];
+  return (data as TutorApplicationWithProfile[]) || [];
 };
 
 const DirectorPanel = () => {
@@ -56,11 +60,13 @@ const DirectorPanel = () => {
     data: applications = [],
     isLoading: applicationsLoading,
     isError: applicationsError,
-    error: applicationsErrorMsg,
-  } = useQuery<TutorApplication[]>({
-    queryKey: ["applications"],
-    queryFn: fetchApplications,
-    enabled: !!isDirector,
+        error: applicationsErrorMsg,
+      } = useQuery<TutorApplicationWithProfile[]>(
+        {
+        queryKey: ["applications"],
+        queryFn: fetchApplications,
+        enabled: !!isDirector,
+    
   });
 
   // Mutations

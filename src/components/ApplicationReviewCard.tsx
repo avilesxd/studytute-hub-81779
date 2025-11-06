@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Phone, GraduationCap } from "lucide-react";
+import { Mail, Phone, GraduationCap, Clock } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
 import { UseMutationResult } from "@tanstack/react-query";
 
@@ -15,7 +15,7 @@ type TutorApplication =
   Database["public"]["Tables"]["tutor_applications"]["Row"];
 
 type ApplicationReviewCardProps = {
-  application: TutorApplication;
+  application: TutorApplication & { profiles: { full_name: string } | null };
   updateStatusMutation: UseMutationResult<
     void,
     Error,
@@ -37,7 +37,7 @@ export const ApplicationReviewCard = ({
     <CardHeader>
       <div className="flex items-start justify-between">
         <div>
-          <CardTitle className="text-xl mb-1">{application.name}</CardTitle>
+          <CardTitle className="text-xl mb-1">{application.profiles?.full_name}</CardTitle>
           <p className="text-sm text-muted-foreground">{application.subject}</p>
         </div>
         <Badge
@@ -67,6 +67,13 @@ export const ApplicationReviewCard = ({
         <div className="flex items-center gap-2 text-sm">
           <Phone className="h-4 w-4 text-primary" />
           <span>{application.phone}</span>
+        </div>
+      )}
+      {application.availability && application.availability.length > 0 && (
+        <div className="flex items-center gap-2 text-sm">
+          <Clock className="h-4 w-4 text-primary" />
+          <span className="text-muted-foreground">Disponibilidad:</span>
+          <span>{application.availability.join(", ")}</span>
         </div>
       )}
       <div className="flex items-start gap-2 text-sm">

@@ -7,6 +7,7 @@ interface AuthContextType {
   session: Session | null;
   isDirector: boolean;
   isApprovedTutor: boolean;
+  applicationStatus: "pending" | "approved" | "rejected" | null;
   isLoading: boolean;
 }
 
