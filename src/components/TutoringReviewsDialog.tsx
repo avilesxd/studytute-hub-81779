@@ -58,7 +58,7 @@ const renderStars = (rating: number) => {
 };
 
 const ReviewCard = ({ review }: { review: Review }) => (
-  <div className="flex items-start gap-4">
+  <div className="flex items-start gap-4 border-b pb-4">
     <Avatar>
       <AvatarImage src={review.user_avatar_url} alt={review.user_name} />
       <AvatarFallback>{review.user_name.charAt(0)}</AvatarFallback>
@@ -66,7 +66,9 @@ const ReviewCard = ({ review }: { review: Review }) => (
     <div className="flex-1">
       <div className="flex items-center justify-between">
         <p className="font-semibold">{review.user_name}</p>
-        <div className="flex items-center gap-1">{renderStars(review.rating)}</div>
+        <div className="flex items-center gap-1">
+          {renderStars(review.rating)}
+        </div>
       </div>
       <p className="text-sm text-muted-foreground">
         {new Date(review.created_at).toLocaleDateString()}
@@ -76,13 +78,27 @@ const ReviewCard = ({ review }: { review: Review }) => (
   </div>
 );
 
-export const TutoringReviewsDialog = ({ tutoringId }: { tutoringId: string }) => {
-  const { data: reviews = [], isLoading, isError, error } = useQuery<Review[]>({ queryKey: ["reviews", tutoringId], queryFn: () => fetchReviews(tutoringId) });
+export const TutoringReviewsDialog = ({
+  tutoringId,
+}: {
+  tutoringId: string;
+}) => {
+  const {
+    data: reviews = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery<Review[]>({
+    queryKey: ["reviews", tutoringId],
+    queryFn: () => fetchReviews(tutoringId),
+  });
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Ver Reseñas</Button>
+        <Button variant="outline" className="flex-1">
+          Ver Reseñas
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
