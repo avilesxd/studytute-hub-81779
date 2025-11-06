@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { FormatDate } from "@/utils/formatDate";
+import { ReviewDialog } from "./ReviewDialog";
 
 interface TutoringCardProps {
   id: string;
@@ -61,6 +62,25 @@ const TutoringCard = ({
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [currentAvailableSpots, setCurrentAvailableSpots] =
     useState(availableSpots);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+
+  const fetchStats = async () => {
+    const { data, error } = await supabase.rpc("get_tutoring_stats", {
+      p_tutoring_id: id,
+    });
+
+    if (data && !error) {
+      const stats = data[0];
+      if (stats.review_count > 0 && stats.average_rating) {
+        setAverageRating(stats.average_rating);
+        setReviewCount(stats.review_count);
+      } else {
+        setAverageRating(0);
+        setReviewCount(0);
+      }
+    }
+  };
 
   useEffect(() => {
     const checkEnrollment = async () => {
@@ -79,6 +99,7 @@ const TutoringCard = ({
     };
 
     checkEnrollment();
+    fetchStats();
   }, [user, id]);
 
   const handleEnroll = async () => {
@@ -113,6 +134,10 @@ const TutoringCard = ({
     }
   };
 
+  const handleReviewSubmit = () => {
+    fetchStats();
+  };
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, index) => (
       <Star
@@ -135,7 +160,10 @@ const TutoringCard = ({
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
         />
         <div className="absolute top-3 right-3 bg-card/95 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
-          {renderStars(rating)}
+          {renderStars(averageRating)}
+          <span className="text-xs text-muted-foreground ml-1">
+            ({reviewCount})
+          </span>
         </div>
       </div>
 
@@ -206,9 +234,16 @@ const TutoringCard = ({
             Esta es tu tutoría
           </div>
         ) : isEnrolled ? (
-          <Button disabled className="w-full bg-green-500 text-white">
-            Ya estás inscrito
-          </Button>
+          <div className="flex flex-col w-full gap-2">
+            <Button disabled className="w-full bg-green-500 text-white">
+              Ya estás inscrito
+            </Button>
+            <ReviewDialog tutoringId={id} onReviewSubmit={handleReviewSubmit}>
+              <Button variant="outline" className="w-full">
+                Dejar una reseña
+              </Button>
+            </ReviewDialog>
+          </div>
         ) : (
           <Button
             className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity shadow-sm"
