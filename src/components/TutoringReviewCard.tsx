@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Users, DollarSign, BookOpen, Calendar } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
+import { TutoringReviewsDialog } from "@/components/TutoringReviewsDialog";
 import EnrolledStudentsDialog from "@/components/EnrolledStudentsDialog";
 import { UseMutationResult } from "@tanstack/react-query";
 
@@ -115,7 +116,10 @@ export const TutoringReviewCard = ({ tutoring, updateStatusMutation, deleteMutat
         </>
       )}
       {tutoring.status === "approved" && (
-        <EnrolledStudentsDialog tutoringId={tutoring.id} />
+        <>
+          <EnrolledStudentsDialog tutoringId={tutoring.id} />
+          <TutoringReviewsDialog tutoringId={tutoring.id} />
+        </>
       )}
       <Button
         onClick={() => deleteMutation.mutate(tutoring.id)}
