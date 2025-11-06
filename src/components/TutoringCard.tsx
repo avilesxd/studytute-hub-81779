@@ -1,5 +1,6 @@
 import {
   Star,
+  StarHalf,
   Clock,
   Users,
   DollarSign,
@@ -150,16 +151,21 @@ const TutoringCard = ({
   };
 
   const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }).map((_, index) => (
-      <Star
-        key={index}
-        className={`h-4 w-4 ${
-          index < rating
-            ? "fill-yellow-400 text-yellow-400"
-            : "fill-gray-200 text-gray-200"
-        }`}
-      />
-    ));
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 !== 0;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+    return (
+      <div className="flex items-center">
+        {Array.from({ length: fullStars }).map((_, index) => (
+          <Star key={`full-${index}`} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+        ))}
+        {halfStar && <StarHalf key="half" className="h-4 w-4 fill-yellow-400 text-yellow-400" />}
+        {Array.from({ length: emptyStars }).map((_, index) => (
+          <Star key={`empty-${index}`} className="h-4 w-4 fill-gray-200 text-gray-200" />
+        ))}
+      </div>
+    );
   };
 
   return (
