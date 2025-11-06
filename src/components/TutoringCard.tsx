@@ -192,7 +192,7 @@ const TutoringCard = ({
         <div className="absolute top-3 right-3 bg-card/95 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
           {renderStars(averageRating)}
           <span className="text-xs text-muted-foreground ml-1">
-            ({reviewCount})
+            {averageRating.toFixed(1)} ({reviewCount})
           </span>
         </div>
       </div>
