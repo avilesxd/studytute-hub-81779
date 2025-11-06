@@ -110,3 +110,20 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+.day-with-event {
+  position: relative;
+}
+
+.day-with-event::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: hsl(var(--primary));
+}
+

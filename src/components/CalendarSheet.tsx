@@ -77,7 +77,7 @@ export const CalendarSheet = () => {
               event: events.map((event) => new Date(event.tutoring_date)),
             }}
             modifiersClassNames={{
-              event: "bg-primary text-primary-foreground",
+              event: "day-with-event",
             }}
           />
           <div className="mt-4">
