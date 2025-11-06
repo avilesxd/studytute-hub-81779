@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,12 +18,29 @@ interface ReviewDialogProps {
   tutoringId: string;
   children: React.ReactNode;
   onReviewSubmit: () => void;
+  reviewId?: number;
+  initialRating?: number;
+  initialComment?: string;
 }
 
-export function ReviewDialog({ tutoringId, children, onReviewSubmit }: ReviewDialogProps) {
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
+export function ReviewDialog({
+  tutoringId,
+  children,
+  onReviewSubmit,
+  reviewId,
+  initialRating = 0,
+  initialComment = "",
+}: ReviewDialogProps) {
+  const [rating, setRating] = useState(initialRating);
+  const [comment, setComment] = useState(initialComment);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setRating(initialRating);
+      setComment(initialComment);
+    }
+  }, [isOpen, initialRating, initialComment]);
 
   const handleRating = (rate: number) => {
     setRating(rate);
@@ -36,21 +53,22 @@ export function ReviewDialog({ tutoringId, children, onReviewSubmit }: ReviewDia
     }
 
     try {
-      const { error } = await supabase.rpc("create_review", {
-        p_tutoring_id: tutoringId,
-        p_rating: rating,
-        p_comment: comment,
-      });
+      const rpcName = reviewId ? "update_review" : "create_review";
+      const params = reviewId
+        ? { p_review_id: reviewId, p_rating: rating, p_comment: comment }
+        : { p_tutoring_id: tutoringId, p_rating: rating, p_comment: comment };
+
+      const { error } = await supabase.rpc(rpcName, params as any);
 
       if (error) {
         throw error;
       }
 
-      toast.success("Reseña enviada con éxito");
+      toast.success(`Reseña ${reviewId ? 'actualizada' : 'enviada'} con éxito`);
       onReviewSubmit();
       setIsOpen(false);
     } catch (error: any) {
-      toast.error("Error al enviar la reseña", {
+      toast.error(`Error al ${reviewId ? 'actualizar' : 'enviar'} la reseña`, {
         description: error.message,
       });
     }
@@ -61,7 +79,7 @@ export function ReviewDialog({ tutoringId, children, onReviewSubmit }: ReviewDia
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Deja tu reseña</DialogTitle>
+          <DialogTitle>{reviewId ? 'Editar reseña' : 'Deja tu reseña'}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center justify-center gap-2">
@@ -87,7 +105,7 @@ export function ReviewDialog({ tutoringId, children, onReviewSubmit }: ReviewDia
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>
-          <Button onClick={handleSubmit}>Enviar reseña</Button>
+          <Button onClick={handleSubmit}>{reviewId ? 'Guardar cambios' : 'Enviar reseña'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

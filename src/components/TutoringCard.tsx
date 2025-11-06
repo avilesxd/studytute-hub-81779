@@ -64,6 +64,7 @@ const TutoringCard = ({
     useState(availableSpots);
   const [averageRating, setAverageRating] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
+  const [userReview, setUserReview] = useState<any>(null);
 
   const fetchStats = async () => {
     const { data, error } = await supabase.rpc("get_tutoring_stats", {
@@ -79,6 +80,14 @@ const TutoringCard = ({
         setAverageRating(0);
         setReviewCount(0);
       }
+    }
+  };
+
+  const fetchUserReview = async () => {
+    if (!user) return;
+    const { data, error } = await supabase.rpc("get_user_review_for_tutoring", { p_tutoring_id: id });
+    if (data && !error && data.length > 0) {
+      setUserReview(data[0]);
     }
   };
 
@@ -100,6 +109,7 @@ const TutoringCard = ({
 
     checkEnrollment();
     fetchStats();
+    fetchUserReview();
   }, [user, id]);
 
   const handleEnroll = async () => {
@@ -136,6 +146,7 @@ const TutoringCard = ({
 
   const handleReviewSubmit = () => {
     fetchStats();
+    fetchUserReview();
   };
 
   const renderStars = (rating: number) => {
@@ -238,9 +249,15 @@ const TutoringCard = ({
             <Button disabled className="w-full bg-green-500 text-white">
               Ya estás inscrito
             </Button>
-            <ReviewDialog tutoringId={id} onReviewSubmit={handleReviewSubmit}>
+            <ReviewDialog
+              tutoringId={id}
+              onReviewSubmit={handleReviewSubmit}
+              reviewId={userReview?.id}
+              initialRating={userReview?.rating}
+              initialComment={userReview?.comment}
+            >
               <Button variant="outline" className="w-full">
-                Dejar una reseña
+                {userReview ? 'Editar reseña' : 'Dejar una reseña'}
               </Button>
             </ReviewDialog>
           </div>
