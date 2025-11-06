@@ -64,11 +64,11 @@ export function ReviewDialog({
         throw error;
       }
 
-      toast.success(`Reseña ${reviewId ? 'actualizada' : 'enviada'} con éxito`);
+      toast.success(`Reseña ${reviewId ? "actualizada" : "enviada"} con éxito`);
       onReviewSubmit();
       setIsOpen(false);
     } catch (error: any) {
-      toast.error(`Error al ${reviewId ? 'actualizar' : 'enviar'} la reseña`, {
+      toast.error(`Error al ${reviewId ? "actualizar" : "enviar"} la reseña`, {
         description: error.message,
       });
     }
@@ -79,7 +79,9 @@ export function ReviewDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{reviewId ? 'Editar reseña' : 'Deja tu reseña'}</DialogTitle>
+          <DialogTitle>
+            {reviewId ? "Editar reseña" : "Deja tu reseña"}
+          </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center justify-center gap-2">
@@ -105,7 +107,9 @@ export function ReviewDialog({
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>
-          <Button onClick={handleSubmit}>{reviewId ? 'Guardar cambios' : 'Enviar reseña'}</Button>
+          <Button onClick={handleSubmit}>
+            {reviewId ? "Guardar cambios" : "Enviar reseña"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

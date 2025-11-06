@@ -35,29 +35,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Check if user is director and approved tutor
-        if (session?.user) {
-          setTimeout(() => {
-            checkUserRoles(session.user.id);
-          }, 0);
-        } else {
-          setIsDirector(false);
-          setIsApprovedTutor(false);
-          setIsLoading(false);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+
+      // Check if user is director and approved tutor
+      if (session?.user) {
+        setTimeout(() => {
+          checkUserRoles(session.user.id);
+        }, 0);
+      } else {
+        setIsDirector(false);
+        setIsApprovedTutor(false);
+        setIsLoading(false);
       }
-    );
+    });
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
         checkUserRoles(session.user.id);
       } else {
@@ -99,7 +99,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isDirector, isApprovedTutor, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, session, isDirector, isApprovedTutor, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,27 +1,44 @@
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Mail, Phone, GraduationCap } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
 import { UseMutationResult } from "@tanstack/react-query";
 
-type TutorApplication = Database["public"]["Tables"]["tutor_applications"]["Row"];
+type TutorApplication =
+  Database["public"]["Tables"]["tutor_applications"]["Row"];
 
 type ApplicationReviewCardProps = {
   application: TutorApplication;
-  updateStatusMutation: UseMutationResult<void, Error, { id: string; status: Database["public"]["Enums"]["tutor_application_status"]; }, unknown>;
+  updateStatusMutation: UseMutationResult<
+    void,
+    Error,
+    {
+      id: string;
+      status: Database["public"]["Enums"]["tutor_application_status"];
+    },
+    unknown
+  >;
   deleteMutation: UseMutationResult<void, Error, string, unknown>;
 };
 
-export const ApplicationReviewCard = ({ application, updateStatusMutation, deleteMutation }: ApplicationReviewCardProps) => (
+export const ApplicationReviewCard = ({
+  application,
+  updateStatusMutation,
+  deleteMutation,
+}: ApplicationReviewCardProps) => (
   <Card key={application.id} className="overflow-hidden">
     <CardHeader>
       <div className="flex items-start justify-between">
         <div>
           <CardTitle className="text-xl mb-1">{application.name}</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            {application.subject}
-          </p>
+          <p className="text-sm text-muted-foreground">{application.subject}</p>
         </div>
         <Badge
           variant={
@@ -69,14 +86,24 @@ export const ApplicationReviewCard = ({ application, updateStatusMutation, delet
       {application.status === "pending" && (
         <>
           <Button
-            onClick={() => updateStatusMutation.mutate({ id: application.id, status: "approved" })}
+            onClick={() =>
+              updateStatusMutation.mutate({
+                id: application.id,
+                status: "approved",
+              })
+            }
             className="flex-1 bg-gradient-to-r from-primary to-secondary"
             disabled={updateStatusMutation.isPending}
           >
             Aprobar
           </Button>
           <Button
-            onClick={() => updateStatusMutation.mutate({ id: application.id, status: "rejected" })}
+            onClick={() =>
+              updateStatusMutation.mutate({
+                id: application.id,
+                status: "rejected",
+              })
+            }
             variant="destructive"
             className="flex-1"
             disabled={updateStatusMutation.isPending}

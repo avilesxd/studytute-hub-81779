@@ -86,7 +86,9 @@ const TutoringCard = ({
 
   const fetchUserReview = async () => {
     if (!user) return;
-    const { data, error } = await supabase.rpc("get_user_review_for_tutoring", { p_tutoring_id: id });
+    const { data, error } = await supabase.rpc("get_user_review_for_tutoring", {
+      p_tutoring_id: id,
+    });
     if (data && !error && data.length > 0) {
       setUserReview(data[0]);
     }
@@ -158,11 +160,22 @@ const TutoringCard = ({
     return (
       <div className="flex items-center">
         {Array.from({ length: fullStars }).map((_, index) => (
-          <Star key={`full-${index}`} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+          <Star
+            key={`full-${index}`}
+            className="h-4 w-4 fill-yellow-400 text-yellow-400"
+          />
         ))}
-        {halfStar && <StarHalf key="half" className="h-4 w-4 fill-yellow-400 text-yellow-400" />}
+        {halfStar && (
+          <StarHalf
+            key="half"
+            className="h-4 w-4 fill-yellow-400 text-yellow-400"
+          />
+        )}
         {Array.from({ length: emptyStars }).map((_, index) => (
-          <Star key={`empty-${index}`} className="h-4 w-4 fill-gray-200 text-gray-200" />
+          <Star
+            key={`empty-${index}`}
+            className="h-4 w-4 fill-gray-200 text-gray-200"
+          />
         ))}
       </div>
     );
@@ -263,7 +276,7 @@ const TutoringCard = ({
               initialComment={userReview?.comment}
             >
               <Button variant="outline" className="w-full">
-                {userReview ? 'Editar reseña' : 'Dejar una reseña'}
+                {userReview ? "Editar reseña" : "Dejar una reseña"}
               </Button>
             </ReviewDialog>
           </div>

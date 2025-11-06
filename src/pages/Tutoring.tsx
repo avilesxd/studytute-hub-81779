@@ -51,7 +51,9 @@ const Tutoring = () => {
   if (isError) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
-        <p className="text-red-500">Error al cargar las tutorías: {error.message}</p>
+        <p className="text-red-500">
+          Error al cargar las tutorías: {error.message}
+        </p>
       </div>
     );
   }
@@ -65,7 +67,8 @@ const Tutoring = () => {
               Tutoría Entre Estudiantes
             </h1>
             <p className="text-muted-foreground text-lg">
-              Encuentra el apoyo académico que necesitas o comparte tu conocimiento
+              Encuentra el apoyo académico que necesitas o comparte tu
+              conocimiento
             </p>
           </div>
           <div className="flex gap-3">

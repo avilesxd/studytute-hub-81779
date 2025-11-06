@@ -1,5 +1,12 @@
 import CategoryCard from "@/components/CategoryCard";
-import { Users, GraduationCap, Calendar, FileText, CreditCard, BookOpen } from "lucide-react";
+import {
+  Users,
+  GraduationCap,
+  Calendar,
+  FileText,
+  CreditCard,
+  BookOpen,
+} from "lucide-react";
 import mathTutoringImage from "@/assets/math-tutoring.jpg";
 import physicsTutoringImage from "@/assets/physics-tutoring.jpg";
 import programmingTutoringImage from "@/assets/programming-tutoring.jpg";
@@ -8,7 +15,8 @@ const Index = () => {
   const categories = [
     {
       title: "Tutoría Entre Estudiantes",
-      description: "Encuentra apoyo académico o comparte tu conocimiento con otros estudiantes",
+      description:
+        "Encuentra apoyo académico o comparte tu conocimiento con otros estudiantes",
       icon: Users,
       image: mathTutoringImage,
       link: "/tutorias",
@@ -16,7 +24,8 @@ const Index = () => {
     },
     {
       title: "Evaluación Docente",
-      description: "Evalúa a tus docentes y contribuye a mejorar la calidad educativa",
+      description:
+        "Evalúa a tus docentes y contribuye a mejorar la calidad educativa",
       icon: GraduationCap,
       image: physicsTutoringImage,
       link: "#",
@@ -24,7 +33,8 @@ const Index = () => {
     },
     {
       title: "Inscripción de Asignaturas",
-      description: "Inscribe tus asignaturas para el próximo semestre académico",
+      description:
+        "Inscribe tus asignaturas para el próximo semestre académico",
       icon: BookOpen,
       image: programmingTutoringImage,
       link: "#",
@@ -32,7 +42,8 @@ const Index = () => {
     },
     {
       title: "Solicitudes Académicas",
-      description: "Gestiona tus solicitudes académicas y trámites administrativos",
+      description:
+        "Gestiona tus solicitudes académicas y trámites administrativos",
       icon: FileText,
       image: mathTutoringImage,
       link: "#",
@@ -68,8 +79,18 @@ const Index = () => {
       <div className="mb-6">
         <button className="text-accent hover:text-accent/80 transition-colors font-medium flex items-center gap-2">
           VER TODAS LAS TARJETAS
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>
