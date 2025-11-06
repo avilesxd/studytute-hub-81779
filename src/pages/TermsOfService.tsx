@@ -82,7 +82,7 @@ const TermsOfService = () => {
       <h2>9. Contacto</h2>
       <p>
         Si tiene alguna pregunta sobre estos Términos, póngase en contacto con
-        nosotros en [correo electrónico de contacto].
+        nosotros en director@uarica.cl.
       </p>
     </div>
   );
