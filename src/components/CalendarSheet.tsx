@@ -20,7 +20,7 @@ interface CalendarEntry {
   role: "tutor" | "student";
 }
 
-export const CalendarSheet = () => {
+export const CalendarSheet = ({ isMobile = false }: { isMobile?: boolean }) => {
   const [events, setEvents] = useState<CalendarEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date()
@@ -61,7 +61,7 @@ export const CalendarSheet = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="text-primary-foreground hover:bg-primary-foreground/10 hidden sm:flex"
+          className={`text-primary-foreground hover:bg-primary-foreground/10 ${isMobile ? "" : "hidden sm:flex"}`}
         >
           <CalendarIcon className="h-5 w-5" />
         </Button>

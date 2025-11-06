@@ -105,14 +105,17 @@ const Header = () => {
                   </SheetHeader>
                   <div className="py-8">{renderNavLinks(true)}</div>
                   {isDirector && (
-                    <Button
-                      variant="link"
-                      className="w-full text-primary-foreground border-primary-foreground/50 hover:bg-primary-foreground/10 gap-2"
-                      onClick={() => navigate("/director")}
-                    >
-                      <Shield className="h-5 w-5" />
-                      <span>Panel Director</span>
-                    </Button>
+                    <div className="flex items-center w-full">
+                      <Button
+                        variant="link"
+                        className="flex-1 text-primary-foreground border-primary-foreground/50 hover:bg-primary-foreground/10 gap-2"
+                        onClick={() => navigate("/director")}
+                      >
+                        <Shield className="h-5 w-5" />
+                        <span>Panel Director</span>
+                      </Button>
+                      {user && <CalendarSheet isMobile />}
+                    </div>
                   )}
                 </SheetContent>
               </Sheet>
