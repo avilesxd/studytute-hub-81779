@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { isSameDay } from "date-fns";
 
 interface CalendarEntry {
   tutoring_id: string;
@@ -44,15 +45,14 @@ export const CalendarSheet = () => {
     }
   }, [user]);
 
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+  };
+
   const eventsOnSelectedDate = events.filter((event) => {
     if (!selectedDate) return false;
     const eventDate = new Date(event.tutoring_date);
-
-    return (
-      eventDate.getFullYear() === selectedDate.getFullYear() &&
-      eventDate.getMonth() === selectedDate.getMonth() &&
-      eventDate.getDate() === selectedDate.getDate()
-    );
+    return isSameDay(eventDate, selectedDate);
   });
 
   return (
@@ -74,7 +74,7 @@ export const CalendarSheet = () => {
           <Calendar
             mode="single"
             selected={selectedDate}
-            onSelect={setSelectedDate}
+            onSelect={handleDateSelect}
             modifiers={{
               event: events.map((event) => new Date(event.tutoring_date)),
             }}
