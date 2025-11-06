@@ -47,6 +47,7 @@ export const CalendarSheet = () => {
   const eventsOnSelectedDate = events.filter((event) => {
     if (!selectedDate) return false;
     const eventDate = new Date(event.tutoring_date);
+
     return (
       eventDate.getFullYear() === selectedDate.getFullYear() &&
       eventDate.getMonth() === selectedDate.getMonth() &&
@@ -71,6 +72,7 @@ export const CalendarSheet = () => {
         </SheetHeader>
         <div className="py-8">
           <Calendar
+            mode="single"
             selected={selectedDate}
             onSelect={setSelectedDate}
             modifiers={{
