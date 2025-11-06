@@ -7,8 +7,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { supabase } from "@/integrations/supabase/client";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CalendarEntry {
   tutoring_id: string;
@@ -22,12 +24,35 @@ export const CalendarSheet = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date()
   );
+  const { user } = useAuth();
 
-  const eventsOnSelectedDate = events.filter(
-    (event) =>
-      new Date(event.tutoring_date).toDateString() ===
-      selectedDate?.toDateString()
-  );
+  useEffect(() => {
+    if (user) {
+      const fetchCalendar = async () => {
+        const { data, error } = await supabase.rpc("get_user_calendar", {
+          p_user_id: user.id,
+        });
+
+        if (error) {
+          console.error("Error fetching calendar:", error);
+        } else {
+          setEvents(data || []);
+        }
+      };
+
+      fetchCalendar();
+    }
+  }, [user]);
+
+  const eventsOnSelectedDate = events.filter((event) => {
+    if (!selectedDate) return false;
+    const eventDate = new Date(event.tutoring_date);
+    return (
+      eventDate.getFullYear() === selectedDate.getFullYear() &&
+      eventDate.getMonth() === selectedDate.getMonth() &&
+      eventDate.getDate() === selectedDate.getDate()
+    );
+  });
 
   return (
     <Sheet>
