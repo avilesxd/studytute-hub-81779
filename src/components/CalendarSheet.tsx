@@ -1,112 +1,110 @@
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { supabase } from "@/integrations/supabase/client";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { isSameDay } from "date-fns";
+} from '@/components/ui/sheet'
+import { supabase } from '@/integrations/supabase/client'
+import { Calendar as CalendarIcon } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { isSameDay } from 'date-fns'
 
 interface CalendarEntry {
-  tutoring_id: string;
-  tutoring_name: string;
-  tutoring_date: string;
-  role: "tutor" | "student";
+  tutoring_id: string
+  tutoring_name: string
+  tutoring_date: string
+  role: 'tutor' | 'student'
 }
 
 export const CalendarSheet = ({ isMobile = false }: { isMobile?: boolean }) => {
-  const [events, setEvents] = useState<CalendarEntry[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date()
-  );
-  const { user } = useAuth();
+  const [events, setEvents] = useState<CalendarEntry[]>([])
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+  const { user } = useAuth()
 
   useEffect(() => {
     if (user) {
       const fetchCalendar = async () => {
-        const { data, error } = await supabase.rpc("get_user_calendar", {
+        const { data, error } = await supabase.rpc('get_user_calendar', {
           p_user_id: user.id,
-        });
+        })
 
         if (error) {
-          console.error("Error fetching calendar:", error);
+          console.error('Error fetching calendar:', error)
         } else {
-          setEvents(data || []);
+          setEvents(data || [])
         }
-      };
+      }
 
-      fetchCalendar();
+      fetchCalendar()
     }
-  }, [user]);
+  }, [user])
 
   const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
-  };
+    setSelectedDate(date)
+  }
 
   const eventsOnSelectedDate = events.filter((event) => {
-    if (!selectedDate) return false;
-    const eventDate = new Date(event.tutoring_date);
-    return isSameDay(eventDate, selectedDate);
-  });
+    if (!selectedDate) return false
+    const eventDate = new Date(event.tutoring_date)
+    return isSameDay(eventDate, selectedDate)
+  })
 
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          variant="ghost"
-          size="icon"
-          className={`text-primary-foreground hover:bg-primary-foreground/10 ${isMobile ? "" : "hidden sm:flex"}`}
+          variant='ghost'
+          size='icon'
+          className={`text-primary-foreground hover:bg-primary-foreground/10 ${isMobile ? '' : 'hidden sm:flex'}`}
         >
-          <CalendarIcon className="h-5 w-5" />
+          <CalendarIcon className='h-5 w-5' />
         </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Calendario de Tutorías</SheetTitle>
         </SheetHeader>
-        <div className="py-8">
+        <div className='py-8'>
           <Calendar
-            mode="single"
+            mode='single'
             selected={selectedDate}
             onSelect={handleDateSelect}
             modifiers={{
               event: events.map((event) => new Date(event.tutoring_date)),
             }}
             modifiersClassNames={{
-              event: "day-with-event",
+              event: 'day-with-event',
             }}
           />
-          <div className="mt-4">
-            <h3 className="text-lg font-semibold">
+          <div className='mt-4'>
+            <h3 className='text-lg font-semibold'>
               Eventos para {selectedDate?.toLocaleDateString()}
             </h3>
             {eventsOnSelectedDate.length > 0 ? (
-              <ul className="space-y-2 mt-2">
+              <ul className='space-y-2 mt-2'>
                 {eventsOnSelectedDate.map((event) => (
-                  <li key={event.tutoring_id} className="p-2 rounded-md">
-                    <p className="font-semibold">{event.tutoring_name}</p>
+                  <li key={event.tutoring_id} className='p-2 rounded-md'>
+                    <p className='font-semibold'>{event.tutoring_name}</p>
                     <p
                       className={`text-sm ${
-                        event.role === "tutor"
-                          ? "text-blue-500"
-                          : "text-green-500"
+                        event.role === 'tutor'
+                          ? 'text-blue-500'
+                          : 'text-green-500'
                       }`}
                     >
-                      {event.role === "tutor"
-                        ? "Tutoría que impartes"
-                        : "Tutoría a la que asistes"}
+                      {event.role === 'tutor'
+                        ? 'Tutoría que impartes'
+                        : 'Tutoría a la que asistes'}
                     </p>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-muted-foreground mt-2">
+              <p className='text-muted-foreground mt-2'>
                 No hay eventos para esta fecha.
               </p>
             )}
@@ -114,5 +112,5 @@ export const CalendarSheet = ({ isMobile = false }: { isMobile?: boolean }) => {
         </div>
       </SheetContent>
     </Sheet>
-  );
-};
+  )
+}

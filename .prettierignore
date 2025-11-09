@@ -1,0 +1,19 @@
+# Ignore artifacts:
+build
+dist
+coverage
+.next
+.vercel
+
+# Ignore dependencies:
+node_modules
+bun.lockb
+
+# Ignore git
+.git
+
+# Ignore supabase
+supabase/*
+
+# Ignore Shadcn UI config files
+src/components/ui

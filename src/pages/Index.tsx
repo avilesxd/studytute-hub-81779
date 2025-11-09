@@ -1,4 +1,4 @@
-import CategoryCard from "@/components/CategoryCard";
+import CategoryCard from '@/components/CategoryCard'
 import {
   Users,
   GraduationCap,
@@ -6,102 +6,102 @@ import {
   FileText,
   CreditCard,
   BookOpen,
-} from "lucide-react";
-import mathTutoringImage from "@/assets/math-tutoring.jpg";
-import physicsTutoringImage from "@/assets/physics-tutoring.jpg";
-import programmingTutoringImage from "@/assets/programming-tutoring.jpg";
+} from 'lucide-react'
+import mathTutoringImage from '@/assets/math-tutoring.jpg'
+import physicsTutoringImage from '@/assets/physics-tutoring.jpg'
+import programmingTutoringImage from '@/assets/programming-tutoring.jpg'
 
 const Index = () => {
   const categories = [
     {
-      title: "Tutoría Entre Estudiantes",
+      title: 'Tutoría Entre Estudiantes',
       description:
-        "Encuentra apoyo académico o comparte tu conocimiento con otros estudiantes",
+        'Encuentra apoyo académico o comparte tu conocimiento con otros estudiantes',
       icon: Users,
       image: mathTutoringImage,
-      link: "/tutorias",
+      link: '/tutorias',
       locked: false,
     },
     {
-      title: "Evaluación Docente",
+      title: 'Evaluación Docente',
       description:
-        "Evalúa a tus docentes y contribuye a mejorar la calidad educativa",
+        'Evalúa a tus docentes y contribuye a mejorar la calidad educativa',
       icon: GraduationCap,
       image: physicsTutoringImage,
-      link: "#",
+      link: '#',
       locked: true,
     },
     {
-      title: "Inscripción de Asignaturas",
+      title: 'Inscripción de Asignaturas',
       description:
-        "Inscribe tus asignaturas para el próximo semestre académico",
+        'Inscribe tus asignaturas para el próximo semestre académico',
       icon: BookOpen,
       image: programmingTutoringImage,
-      link: "#",
+      link: '#',
       locked: true,
     },
     {
-      title: "Solicitudes Académicas",
+      title: 'Solicitudes Académicas',
       description:
-        "Gestiona tus solicitudes académicas y trámites administrativos",
+        'Gestiona tus solicitudes académicas y trámites administrativos',
       icon: FileText,
       image: mathTutoringImage,
-      link: "#",
+      link: '#',
       locked: true,
     },
     {
-      title: "Pago en Línea",
-      description: "Realiza tus pagos de matrícula y aranceles de forma segura",
+      title: 'Pago en Línea',
+      description: 'Realiza tus pagos de matrícula y aranceles de forma segura',
       icon: CreditCard,
       image: physicsTutoringImage,
-      link: "#",
+      link: '#',
       locked: true,
     },
     {
-      title: "Horario Semanal",
-      description: "Consulta tu horario de clases y actividades académicas",
+      title: 'Horario Semanal',
+      description: 'Consulta tu horario de clases y actividades académicas',
       icon: Calendar,
       image: programmingTutoringImage,
-      link: "#",
+      link: '#',
       locked: true,
     },
-  ];
+  ]
 
   return (
     <>
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-primary mb-2">Inicio</h1>
-        <p className="text-muted-foreground text-lg">
+      <div className='mb-8'>
+        <h1 className='text-4xl font-bold text-primary mb-2'>Inicio</h1>
+        <p className='text-muted-foreground text-lg'>
           Bienvenido a tu portal estudiantil de Universidad Arica
         </p>
       </div>
 
-      <div className="mb-6">
-        <button className="text-accent hover:text-accent/80 transition-colors font-medium flex items-center gap-2">
+      <div className='mb-6'>
+        <button className='text-accent hover:text-accent/80 transition-colors font-medium flex items-center gap-2'>
           VER TODAS LAS TARJETAS
           <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+            className='w-4 h-4'
+            fill='none'
+            stroke='currentColor'
+            viewBox='0 0 24 24'
           >
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              strokeLinecap='round'
+              strokeLinejoin='round'
               strokeWidth={2}
-              d="M9 5l7 7-7 7"
+              d='M9 5l7 7-7 7'
             />
           </svg>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {categories.map((category) => (
           <CategoryCard key={category.title} {...category} />
         ))}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Index;
+export default Index

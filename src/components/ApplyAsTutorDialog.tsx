@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -8,86 +8,86 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { PenSquare } from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
+import { PenSquare } from 'lucide-react'
+import { toast } from 'sonner'
+import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '@/contexts/AuthContext'
 
 const ApplyAsTutorDialog = () => {
-  const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const [open, setOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const { user } = useAuth()
+  const navigate = useNavigate()
 
   const [applicationStatus, setApplicationStatus] = useState<string | null>(
-    null
-  );
-  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+    null,
+  )
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true)
 
   useEffect(() => {
     const checkApplicationStatus = async () => {
       if (!user) {
-        setIsCheckingStatus(false);
-        return;
+        setIsCheckingStatus(false)
+        return
       }
 
-      setIsCheckingStatus(true);
+      setIsCheckingStatus(true)
       try {
         const { data, error } = await supabase
-          .from("tutor_applications")
-          .select("status")
-          .eq("user_id", user.id)
-          .maybeSingle();
+          .from('tutor_applications')
+          .select('status')
+          .eq('user_id', user.id)
+          .maybeSingle()
 
-        if (error && error.code !== "PGRST116") {
-          throw error;
+        if (error && error.code !== 'PGRST116') {
+          throw error
         }
 
         if (data) {
-          setApplicationStatus(data.status);
+          setApplicationStatus(data.status)
         }
       } catch (error: any) {
-        toast.error("Error al verificar el estado de la postulación", {
+        toast.error('Error al verificar el estado de la postulación', {
           description: error.message,
-        });
+        })
       } finally {
-        setIsCheckingStatus(false);
+        setIsCheckingStatus(false)
       }
-    };
-
-    checkApplicationStatus();
-  }, [user]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!user) {
-      toast.error("Debes iniciar sesión para postular como tutor");
-      navigate("/auth");
-      return;
     }
 
-    setIsLoading(true);
+    checkApplicationStatus()
+  }, [user])
 
-    const formData = new FormData(e.target as HTMLFormElement);
-    const name = user?.user_metadata?.full_name ?? "";
-    const email = user?.email ?? "";
-    const phone = formData.get("phone") as string;
-    const subject = formData.get("subject") as string;
-    const experience = formData.get("experience") as string;
-    const motivation = formData.get("motivation") as string;
-    const availability = ["Mañana", "Tarde", "Noche"].filter(
-      (time) => formData.get(time) === "on"
-    );
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!user) {
+      toast.error('Debes iniciar sesión para postular como tutor')
+      navigate('/auth')
+      return
+    }
+
+    setIsLoading(true)
+
+    const formData = new FormData(e.target as HTMLFormElement)
+    const name = user?.user_metadata?.full_name ?? ''
+    const email = user?.email ?? ''
+    const phone = formData.get('phone') as string
+    const subject = formData.get('subject') as string
+    const experience = formData.get('experience') as string
+    const motivation = formData.get('motivation') as string
+    const availability = ['Mañana', 'Tarde', 'Noche'].filter(
+      (time) => formData.get(time) === 'on',
+    )
 
     try {
       const { data, error } = await supabase
-        .from("tutor_applications")
+        .from('tutor_applications')
         .insert({
           user_id: user.id,
           name,
@@ -98,56 +98,56 @@ const ApplyAsTutorDialog = () => {
           motivation,
           availability: availability.length > 0 ? availability : null,
         })
-        .select("status")
-        .single();
+        .select('status')
+        .single()
 
-      if (error) throw error;
+      if (error) throw error
 
       if (data) {
-        setApplicationStatus(data.status);
+        setApplicationStatus(data.status)
       }
 
-      toast.success("Postulación enviada exitosamente", {
-        description: "El director revisará tu solicitud pronto.",
-      });
-      setOpen(false);
-      (e.target as HTMLFormElement).reset();
+      toast.success('Postulación enviada exitosamente', {
+        description: 'El director revisará tu solicitud pronto.',
+      })
+      setOpen(false)
+      ;(e.target as HTMLFormElement).reset()
     } catch (error: any) {
-      toast.error("Error al enviar la postulación", {
+      toast.error('Error al enviar la postulación', {
         description: error.message,
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const getButtonText = () => {
-    if (isCheckingStatus) return "Cargando...";
-    if (applicationStatus === "pending") return "Postulación Pendiente";
-    if (applicationStatus === "approved") return "Postulación Aprobada";
-    if (applicationStatus === "rejected") return "Volver a Postular";
-    return "Postular como Tutor";
-  };
+    if (isCheckingStatus) return 'Cargando...'
+    if (applicationStatus === 'pending') return 'Postulación Pendiente'
+    if (applicationStatus === 'approved') return 'Postulación Aprobada'
+    if (applicationStatus === 'rejected') return 'Volver a Postular'
+    return 'Postular como Tutor'
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
-          className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+          variant='outline'
+          className='border-primary text-primary hover:bg-primary hover:text-primary-foreground'
           disabled={
             isCheckingStatus ||
-            applicationStatus === "pending" ||
-            applicationStatus === "approved"
+            applicationStatus === 'pending' ||
+            applicationStatus === 'approved'
           }
         >
-          <PenSquare className="mr-2 h-5 w-5" />
+          <PenSquare className='mr-2 h-5 w-5' />
           {getButtonText()}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl max-h-[95vh] overflow-y-auto">
+      <DialogContent className='max-w-3xl max-h-[95vh] overflow-y-auto'>
         <DialogHeader>
-          <DialogTitle className="text-2xl text-primary">
+          <DialogTitle className='text-2xl text-primary'>
             Formulario de Postulación para Tutor
           </DialogTitle>
           <DialogDescription>
@@ -156,64 +156,64 @@ const ApplyAsTutorDialog = () => {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6 mt-4 pr-2">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nombre Completo *</Label>
+        <form onSubmit={handleSubmit} className='space-y-6 mt-4 pr-2'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <div className='space-y-2'>
+              <Label htmlFor='name'>Nombre Completo *</Label>
               <Input
-                id="name"
-                name="name"
-                placeholder="Juan Pérez"
+                id='name'
+                name='name'
+                placeholder='Juan Pérez'
                 required
-                defaultValue={user?.user_metadata?.full_name ?? ""}
+                defaultValue={user?.user_metadata?.full_name ?? ''}
                 readOnly
-                className="bg-gray-100"
+                className='bg-gray-100'
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Correo Electrónico *</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='email'>Correo Electrónico *</Label>
               <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="juan@ejemplo.com"
+                id='email'
+                name='email'
+                type='email'
+                placeholder='juan@ejemplo.com'
                 required
-                defaultValue={user?.email ?? ""}
+                defaultValue={user?.email ?? ''}
                 readOnly
-                className="bg-gray-100"
+                className='bg-gray-100'
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono</Label>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <div className='space-y-2'>
+              <Label htmlFor='phone'>Teléfono</Label>
               <Input
-                id="phone"
-                name="phone"
-                type="tel"
-                placeholder="+56 9 1234 5678"
+                id='phone'
+                name='phone'
+                type='tel'
+                placeholder='+56 9 1234 5678'
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="subject">Materia a Enseñar *</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='subject'>Materia a Enseñar *</Label>
               <Input
-                id="subject"
-                name="subject"
-                placeholder="Matemáticas, Física, Programación..."
+                id='subject'
+                name='subject'
+                placeholder='Matemáticas, Física, Programación...'
                 required
               />
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className='space-y-2'>
             <Label>Disponibilidad</Label>
-            <div className="flex items-center space-x-4">
-              {["Mañana", "Tarde", "Noche"].map((time) => (
-                <div key={time} className="flex items-center space-x-2">
+            <div className='flex items-center space-x-4'>
+              {['Mañana', 'Tarde', 'Noche'].map((time) => (
+                <div key={time} className='flex items-center space-x-2'>
                   <Checkbox id={time} name={time} />
-                  <Label htmlFor={time} className="font-normal">
+                  <Label htmlFor={time} className='font-normal'>
                     {time}
                   </Label>
                 </div>
@@ -221,53 +221,53 @@ const ApplyAsTutorDialog = () => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="experience">Experiencia Académica y Logros *</Label>
+          <div className='space-y-2'>
+            <Label htmlFor='experience'>Experiencia Académica y Logros *</Label>
             <Textarea
-              id="experience"
-              name="experience"
-              placeholder="Describe tus logros académicos, cursos relevantes, proyectos destacados, etc."
-              className="min-h-28"
+              id='experience'
+              name='experience'
+              placeholder='Describe tus logros académicos, cursos relevantes, proyectos destacados, etc.'
+              className='min-h-28'
               required
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="motivation">
+          <div className='space-y-2'>
+            <Label htmlFor='motivation'>
               ¿Por qué quieres ser tutor en nuestra plataforma? *
             </Label>
             <Textarea
-              id="motivation"
-              name="motivation"
-              placeholder="Comparte tu motivación para enseñar y cómo puedes ayudar a otros estudiantes."
-              className="min-h-28"
+              id='motivation'
+              name='motivation'
+              placeholder='Comparte tu motivación para enseñar y cómo puedes ayudar a otros estudiantes.'
+              className='min-h-28'
               required
             />
           </div>
 
-          <div className="flex justify-end gap-4 pt-4">
+          <div className='flex justify-end gap-4 pt-4'>
             <Button
-              type="button"
-              variant="outline"
+              type='button'
+              variant='outline'
               onClick={() => {
-                setOpen(false);
+                setOpen(false)
               }}
               disabled={isLoading}
             >
               Cancelar
             </Button>
             <Button
-              type="submit"
-              className="bg-gradient-to-r from-primary to-secondary text-white"
+              type='submit'
+              className='bg-gradient-to-r from-primary to-secondary text-white'
               disabled={isLoading}
             >
-              {isLoading ? "Enviando Postulación..." : "Enviar Postulación"}
+              {isLoading ? 'Enviando Postulación...' : 'Enviar Postulación'}
             </Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default ApplyAsTutorDialog;
+export default ApplyAsTutorDialog

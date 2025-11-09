@@ -1,14 +1,14 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { createContext, useContext, useEffect, useState } from 'react'
+import { User, Session } from '@supabase/supabase-js'
+import { supabase } from '@/integrations/supabase/client'
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  isDirector: boolean;
-  isApprovedTutor: boolean;
-  applicationStatus: "pending" | "approved" | "rejected" | null;
-  isLoading: boolean;
+  user: User | null
+  session: Session | null
+  isDirector: boolean
+  isApprovedTutor: boolean
+  applicationStatus: 'pending' | 'approved' | 'rejected' | null
+  isLoading: boolean
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -17,87 +17,87 @@ const AuthContext = createContext<AuthContextType>({
   isDirector: false,
   isApprovedTutor: false,
   isLoading: true,
-});
+})
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthContext)
   if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
+    throw new Error('useAuth must be used within AuthProvider')
   }
-  return context;
-};
+  return context
+}
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isDirector, setIsDirector] = useState(false);
-  const [isApprovedTutor, setIsApprovedTutor] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
+  const [isDirector, setIsDirector] = useState(false)
+  const [isApprovedTutor, setIsApprovedTutor] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     // Set up auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+      setSession(session)
+      setUser(session?.user ?? null)
 
       // Check if user is director and approved tutor
       if (session?.user) {
         setTimeout(() => {
-          checkUserRoles(session.user.id);
-        }, 0);
+          checkUserRoles(session.user.id)
+        }, 0)
       } else {
-        setIsDirector(false);
-        setIsApprovedTutor(false);
-        setIsLoading(false);
+        setIsDirector(false)
+        setIsApprovedTutor(false)
+        setIsLoading(false)
       }
-    });
+    })
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+      setSession(session)
+      setUser(session?.user ?? null)
 
       if (session?.user) {
-        checkUserRoles(session.user.id);
+        checkUserRoles(session.user.id)
       } else {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    });
+    })
 
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => subscription.unsubscribe()
+  }, [])
 
   const checkUserRoles = async (userId: string) => {
     try {
       // Check director role
       const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .eq("role", "director")
-        .maybeSingle();
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'director')
+        .maybeSingle()
 
-      setIsDirector(!!roleData);
+      setIsDirector(!!roleData)
 
       // Check approved tutor status
       const { data: tutorData } = await supabase
-        .from("tutor_applications")
-        .select("status")
-        .eq("user_id", userId)
-        .eq("status", "approved")
-        .maybeSingle();
+        .from('tutor_applications')
+        .select('status')
+        .eq('user_id', userId)
+        .eq('status', 'approved')
+        .maybeSingle()
 
-      setIsApprovedTutor(!!tutorData);
+      setIsApprovedTutor(!!tutorData)
     } catch (error) {
-      console.error("Error checking user roles:", error);
-      setIsDirector(false);
-      setIsApprovedTutor(false);
+      console.error('Error checking user roles:', error)
+      setIsDirector(false)
+      setIsApprovedTutor(false)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <AuthContext.Provider
@@ -105,5 +105,5 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     >
       {children}
     </AuthContext.Provider>
-  );
-};
+  )
+}

@@ -1,6 +1,6 @@
 const PrivacyPolicy = () => {
   return (
-    <div className="prose dark:prose-invert max-w-none">
+    <div className='prose dark:prose-invert max-w-none'>
       <h1>Política de Privacidad</h1>
       <p>Última actualización: 4 de noviembre de 2025</p>
 
@@ -105,7 +105,7 @@ const PrivacyPolicy = () => {
         contacto con nosotros en director@uarica.cl.
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default PrivacyPolicy;
+export default PrivacyPolicy
