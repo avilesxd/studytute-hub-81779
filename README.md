@@ -27,30 +27,30 @@ Si deseas ejecutar este proyecto en tu entorno local, sigue estos pasos:
 
 1. **Clona el repositorio**
 
-    ```sh
-    git clone https://github.com/avilesxd/studytute-hub-81779 > tutorias-para-estudiantes
-    ```
+   ```sh
+   git clone https://github.com/avilesxd/studytute-hub-81779 > tutorias-para-estudiantes
+   ```
 
 2. **Navega al directorio del proyecto**
 
-    ```sh
-    cd tutorias-para-estudiantes
-    ```
+   ```sh
+   cd tutorias-para-estudiantes
+   ```
 
 3. **Instala las dependencias**
-    Se requiere [Node.js](https://nodejs.org/).
+   Se requiere [Node.js](https://nodejs.org/).
 
-    ```sh
-    npm install
-    ```
+   ```sh
+   npm install
+   ```
 
 4. **Inicia el servidor de desarrollo**
 
-    ```sh
-    npm run dev
-    ```
+   ```sh
+   npm run dev
+   ```
 
-    Abre [http://localhost:5173](http://localhost:5173) en tu navegador para ver la aplicación.
+   Abre [http://localhost:5173](http://localhost:5173) en tu navegador para ver la aplicación.
 
 ## Despliegue
 
