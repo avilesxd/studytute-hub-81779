@@ -1,73 +1,57 @@
-# Welcome to your Lovable project
+# Tutorías Entre Estudiantes
 
-## Project info
+Una plataforma web diseñada para conectar a estudiantes que buscan tutorías con aquellos que desean ofrecerlas. Facilita la búsqueda, programación y gestión de sesiones de tutoría en un entorno amigable e intuitivo.
 
-**URL**: https://lovable.dev/projects/a01feefe-c34a-4a45-9c65-6f7b796c95d6
+## Demo en Vivo
 
-## How can I edit this code?
+Puedes ver el proyecto en producción aquí: **[tutoriasentreestudiantes.vercel.app](https://tutoriasentreestudiantes.vercel.app/)**
 
-There are several ways of editing your application.
+## Características Principales
 
-**Use Lovable**
+- **Búsqueda de Tutores:** Filtra y encuentra tutores por materia, disponibilidad y calificación.
+- **Interfaz Moderna:** Diseño limpio, responsivo y fácil de usar construido con las últimas tecnologías web.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a01feefe-c34a-4a45-9c65-6f7b796c95d6) and start prompting.
+## Tecnologías Utilizadas
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
+Este proyecto está construido con:
 
 - Vite
 - TypeScript
 - React
-- shadcn-ui
+- [shadcn/ui](https://ui.shadcn.com/)
 - Tailwind CSS
 
-## How can I deploy this project?
+## Desarrollo Local
 
-Simply open [Lovable](https://lovable.dev/projects/a01feefe-c34a-4a45-9c65-6f7b796c95d6) and click on Share -> Publish.
+Si deseas ejecutar este proyecto en tu entorno local, sigue estos pasos:
 
-## Can I connect a custom domain to my Lovable project?
+1. **Clona el repositorio**
 
-Yes, you can!
+    ```sh
+    git clone https://github.com/avilesxd/studytute-hub-81779 > tutorias-para-estudiantes
+    ```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+2. **Navega al directorio del proyecto**
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+    ```sh
+    cd tutorias-para-estudiantes
+    ```
+
+3. **Instala las dependencias**
+    Se requiere [Node.js](https://nodejs.org/).
+
+    ```sh
+    npm install
+    ```
+
+4. **Inicia el servidor de desarrollo**
+
+    ```sh
+    npm run dev
+    ```
+
+    Abre [http://localhost:5173](http://localhost:5173) en tu navegador para ver la aplicación.
+
+## Despliegue
+
+Este proyecto está desplegado en [Vercel](https://vercel.com/). Cualquier `push` a la rama `main` activará un nuevo despliegue automáticamente.
