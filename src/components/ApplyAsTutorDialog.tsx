@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Checkbox } from '@/components/ui/checkbox'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { PenSquare } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/integrations/supabase/client'
@@ -28,6 +28,7 @@ const ApplyAsTutorDialog = () => {
     null,
   )
   const [isCheckingStatus, setIsCheckingStatus] = useState(true)
+  const [selectedAvailability, setSelectedAvailability] = useState('')
 
   useEffect(() => {
     const checkApplicationStatus = async () => {
@@ -81,9 +82,11 @@ const ApplyAsTutorDialog = () => {
     const subject = formData.get('subject') as string
     const experience = formData.get('experience') as string
     const motivation = formData.get('motivation') as string
-    const availability = ['Mañana', 'Tarde', 'Noche'].filter(
-      (time) => formData.get(time) === 'on',
-    )
+    const availability = formData.get('availability') as string
+    const time = formData.get('time') as string
+
+    const availabilityString =
+      availability && time ? `${availability}: ${time}` : availability
 
     try {
       const { data, error } = await supabase
@@ -96,7 +99,7 @@ const ApplyAsTutorDialog = () => {
           subject,
           experience,
           motivation,
-          availability: availability.length > 0 ? availability : null,
+          availability: availabilityString ? [availabilityString] : null,
         })
         .select('status')
         .single()
@@ -111,6 +114,7 @@ const ApplyAsTutorDialog = () => {
         description: 'El director revisará tu solicitud pronto.',
       })
       setOpen(false)
+      setSelectedAvailability('')
       ;(e.target as HTMLFormElement).reset()
     } catch (error: any) {
       toast.error('Error al enviar la postulación', {
@@ -209,17 +213,36 @@ const ApplyAsTutorDialog = () => {
 
           <div className='space-y-2'>
             <Label>Disponibilidad</Label>
-            <div className='flex items-center space-x-4'>
+            <RadioGroup
+              name='availability'
+              className='flex items-center space-x-4'
+              onValueChange={setSelectedAvailability}
+              value={selectedAvailability}
+            >
               {['Mañana', 'Tarde', 'Noche'].map((time) => (
                 <div key={time} className='flex items-center space-x-2'>
-                  <Checkbox id={time} name={time} />
+                  <RadioGroupItem value={time} id={time} />
                   <Label htmlFor={time} className='font-normal'>
                     {time}
                   </Label>
                 </div>
               ))}
-            </div>
+            </RadioGroup>
           </div>
+
+          {selectedAvailability && (
+            <div className='space-y-2'>
+              <Label htmlFor='time'>
+                Horario para la {selectedAvailability}
+              </Label>
+              <Input
+                id='time'
+                name='time'
+                placeholder={`Ej: 10:00 - 12:00`}
+                required
+              />
+            </div>
+          )}
 
           <div className='space-y-2'>
             <Label htmlFor='experience'>Experiencia Académica y Logros *</Label>
@@ -251,6 +274,7 @@ const ApplyAsTutorDialog = () => {
               variant='outline'
               onClick={() => {
                 setOpen(false)
+                setSelectedAvailability('')
               }}
               disabled={isLoading}
             >
