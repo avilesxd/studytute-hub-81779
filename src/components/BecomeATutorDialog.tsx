@@ -17,7 +17,7 @@ import { toast } from 'sonner'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { format } from 'date-fns'
+import { format, isBefore } from 'date-fns'
 import { Calendar } from './ui/calendar'
 import { cn } from '@/lib/utils'
 
@@ -140,6 +140,7 @@ const BecomeATutorDialog = () => {
                     mode='single'
                     selected={date}
                     onSelect={setDate}
+                    disabled={(date) => isBefore(date, new Date())}
                     initialFocus
                   />
                 </PopoverContent>
