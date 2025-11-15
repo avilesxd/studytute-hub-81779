@@ -13,10 +13,27 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { PenSquare } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
+
+const subjects = [
+  'Matemáticas',
+  'Física',
+  'Programación',
+  'Cálculo',
+  'Álgebra',
+  'Estadística',
+  'Química',
+]
 
 const ApplyAsTutorDialog = () => {
   const [open, setOpen] = useState(false)
@@ -29,6 +46,7 @@ const ApplyAsTutorDialog = () => {
   )
   const [isCheckingStatus, setIsCheckingStatus] = useState(true)
   const [selectedAvailability, setSelectedAvailability] = useState('')
+  const [selectedSubject, setSelectedSubject] = useState('')
 
   useEffect(() => {
     const checkApplicationStatus = async () => {
@@ -73,13 +91,17 @@ const ApplyAsTutorDialog = () => {
       return
     }
 
+    if (!selectedSubject) {
+      toast.error('Por favor, selecciona una materia')
+      return
+    }
+
     setIsLoading(true)
 
     const formData = new FormData(e.target as HTMLFormElement)
     const name = user?.user_metadata?.full_name ?? ''
     const email = user?.email ?? ''
     const phone = formData.get('phone') as string
-    const subject = formData.get('subject') as string
     const experience = formData.get('experience') as string
     const motivation = formData.get('motivation') as string
     const availability = formData.get('availability') as string
@@ -96,7 +118,7 @@ const ApplyAsTutorDialog = () => {
           name,
           email,
           phone: phone || null,
-          subject,
+          subject: selectedSubject,
           experience,
           motivation,
           availability: availabilityString ? [availabilityString] : null,
@@ -115,6 +137,7 @@ const ApplyAsTutorDialog = () => {
       })
       setOpen(false)
       setSelectedAvailability('')
+      setSelectedSubject('')
       ;(e.target as HTMLFormElement).reset()
     } catch (error: any) {
       toast.error('Error al enviar la postulación', {
@@ -202,12 +225,21 @@ const ApplyAsTutorDialog = () => {
             </div>
             <div className='space-y-2'>
               <Label htmlFor='subject'>Materia a Enseñar *</Label>
-              <Input
-                id='subject'
-                name='subject'
-                placeholder='Matemáticas, Física, Programación...'
-                required
-              />
+              <Select
+                onValueChange={setSelectedSubject}
+                value={selectedSubject}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder='Selecciona una materia' />
+                </SelectTrigger>
+                <SelectContent>
+                  {subjects.map((subject) => (
+                    <SelectItem key={subject} value={subject}>
+                      {subject}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
