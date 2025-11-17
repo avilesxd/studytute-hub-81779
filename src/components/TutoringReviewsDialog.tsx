@@ -20,6 +20,12 @@ type Review = {
   user_avatar_url: string
 }
 
+/**
+ * This function fetches reviews for a specific tutoring session using Supabase's RPC feature in a TypeScript React application.
+ * @param {string} tutoringId - The `tutoringId` parameter is a string that represents the unique identifier of a tutoring session. It is used
+ * to fetch reviews associated with that specific tutoring session.
+ * @returns The function `fetchReviews` is returning a Promise that resolves to an array of `Review` objects.
+ */
 const fetchReviews = async (tutoringId: string) => {
   const { data, error } = await supabase.rpc('get_reviews_for_tutoring', {
     p_tutoring_id: tutoringId,
@@ -28,6 +34,8 @@ const fetchReviews = async (tutoringId: string) => {
   return data as Review[]
 }
 
+/* The `renderStars` function is responsible for generating a visual representation of a star rating based on a numerical rating input. Here's
+a breakdown of what the function does: */
 const renderStars = (rating: number) => {
   const fullStars = Math.floor(rating)
   const halfStar = rating % 1 !== 0
@@ -57,6 +65,10 @@ const renderStars = (rating: number) => {
   )
 }
 
+/**
+ * The ReviewCard component displays a review with user information, rating, date, and comment in a structured layout.
+ * @param  - The `ReviewCard` component takes a `review` object as a prop, which should have the following structure:
+ */
 const ReviewCard = ({ review }: { review: Review }) => (
   <div className='flex items-start gap-4 border-b pb-4'>
     <Avatar>
@@ -78,6 +90,14 @@ const ReviewCard = ({ review }: { review: Review }) => (
   </div>
 )
 
+/**
+ * This function displays a dialog box showing reviews for a specific tutoring session.
+ * @param  - The code you provided is a React component called `TutoringReviewsDialog` that displays reviews for a specific tutoring session.
+ * Here's an explanation of the parameters used in the component:
+ * @returns The `TutoringReviewsDialog` component is being returned. It is a dialog component that displays reviews for a specific tutoring
+ * session. The component fetches reviews using the `useQuery` hook, and then renders the reviews in a dialog box with appropriate loading,
+ * error, and empty state handling.
+ */
 export const TutoringReviewsDialog = ({
   tutoringId,
 }: {

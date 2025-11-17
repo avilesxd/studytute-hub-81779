@@ -4,7 +4,16 @@ import { Database } from '@/integrations/supabase/types'
 import { fetchTutorings, fetchApplications } from '@/lib/api'
 import { toast } from 'sonner'
 
-// Hook for managing tutorings data
+/**
+ * These TypeScript functions manage data related to tutorings and applications, including updating status and deleting entries.
+ * @param {boolean} isDirector - The `isDirector` parameter in the functions `useTutoringsData` and `useApplicationsData` is a boolean value
+ * that indicates whether the user accessing the data is a director or not. This parameter is used to determine whether certain actions should
+ * be enabled or disabled based on the user's role
+ * @param {any} user - The `user` parameter in the functions `useTutoringsData` and `useApplicationsData` is an object that represents the
+ * current user. It likely contains information about the user, such as their ID, role, and other relevant details needed for fetching and
+ * updating data related to tutorings and
+ * @returns The `useTutoringsData` and `useApplicationsData` functions are returning an object with the following properties:
+ */
 export function useTutoringsData(isDirector: boolean, user: any) {
   const queryClient = useQueryClient()
 

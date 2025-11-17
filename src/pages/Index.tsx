@@ -11,6 +11,9 @@ import mathTutoringImage from '@/assets/math-tutoring.jpg'
 import physicsTutoringImage from '@/assets/physics-tutoring.jpg'
 import programmingTutoringImage from '@/assets/programming-tutoring.jpg'
 
+/* The `Index` component is a functional component in a TypeScript React application. It defines an array of `categories` containing objects
+with information about different categories related to student services. Each category object includes properties like `title`,
+`description`, `icon`, `image`, `link`, and `locked`. */
 const Index = () => {
   const categories = [
     {

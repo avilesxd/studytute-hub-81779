@@ -19,6 +19,12 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
 })
 
+/**
+ * The useAuth function is a custom hook in TypeScript React that retrieves the authentication context and throws an error if it is not found
+ * within the AuthProvider.
+ * @returns The `useAuth` custom hook is returning the `context` obtained from the `useContext(AuthContext)` hook. If the `context` is not
+ * available (i.e., `!context`), an error is thrown with the message 'useAuth must be used within AuthProvider'.
+ */
 export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {
@@ -27,6 +33,15 @@ export const useAuth = () => {
   return context
 }
 
+/**
+ * The AuthProvider function in TypeScript React sets up authentication state listeners and checks user roles for director and approved tutor
+ * status.
+ * @param  - The code you provided is an `AuthProvider` component that manages authentication state using Supabase. Here's a breakdown of what
+ * it does:
+ * @returns The `AuthProvider` component is being returned, which wraps the `children` components with the `AuthContext.Provider`. The
+ * `AuthProvider` component provides the `AuthContext` value with user information, session data, director status, approved tutor status, and
+ * loading state.
+ */
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)

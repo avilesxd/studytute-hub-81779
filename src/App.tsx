@@ -15,6 +15,9 @@ import PrivacyPolicy from './pages/PrivacyPolicy'
 
 const queryClient = new QueryClient()
 
+/**
+ * The App component sets up the routing for different pages in a React application with various layouts and providers.
+ */
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>

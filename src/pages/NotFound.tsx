@@ -1,6 +1,11 @@
 import { useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 
+/**
+ * The `NotFound` component in TypeScript React displays a 404 error message for non-existent routes and provides a link to return to the home
+ * page.
+ * @returns The NotFound component is being returned. It displays a 404 error message with a link to return to the home page.
+ */
 const NotFound = () => {
   const location = useLocation()
 

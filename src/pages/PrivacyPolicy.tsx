@@ -1,3 +1,10 @@
+/**
+ * The PrivacyPolicy component in this TypeScript React code defines a privacy policy for a tutoring platform, outlining the collection, use,
+ * and sharing of personal information, as well as data security measures and user rights.
+ * @returns The `PrivacyPolicy` component is being returned, which contains the JSX structure defining the privacy policy content of a tutoring
+ * platform. The content includes sections such as Introduction, Information that we Collect, How we Use your Information, Sharing your
+ * Information, Data Security, Your Rights, Changes to this Privacy Policy, and Contact information.
+ */
 const PrivacyPolicy = () => {
   return (
     <div className='prose dark:prose-invert max-w-none'>

@@ -1,3 +1,10 @@
+/**
+ * The function `TermsOfService` returns JSX elements containing a set of terms and conditions for a tutoring platform at the University Arica
+ * in Chile.
+ * @returns The `TermsOfService` component is being returned, which contains the terms of service for a tutoring platform at the University
+ * Arica. The component includes sections such as acceptance of terms, description of service, registration and accounts, user conduct, user
+ * content, limitation of liability, modifications of terms, applicable law, and contact information.
+ */
 const TermsOfService = () => {
   return (
     <div className='prose dark:prose-invert max-w-none'>

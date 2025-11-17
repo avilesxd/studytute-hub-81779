@@ -9,6 +9,12 @@ import { useAuth } from '@/contexts/AuthContext'
 import mathTutoringImage from '@/assets/math-tutoring.jpg'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
+/**
+ * This function fetches approved tutorings with associated profiles from a database using Supabase in a TypeScript React application.
+ * @returns The function `fetchTutorings` is returning the data of approved tutorings with the associated profiles' full names, ordered by the
+ * creation date in descending order. If there is an error during the fetch operation, it will throw the error. If there is no data returned,
+ * it will return an empty array.
+ */
 const fetchTutorings = async () => {
   const { data, error } = await supabase
     .from('tutorings')
@@ -20,6 +26,13 @@ const fetchTutorings = async () => {
   return data || []
 }
 
+/**
+ * Component that displays a list of available tutoring sessions.
+ * Allows users to search for tutoring sessions by title, tutor name, or topic.
+ * Also provides options for users to become tutors or create new sessions if they are already approved.
+ *
+ * @returns {JSX.Element} The tutoring page component.
+ */
 const Tutoring = () => {
   const { isApprovedTutor, user } = useAuth()
   const [searchQuery, setSearchQuery] = useState('')
