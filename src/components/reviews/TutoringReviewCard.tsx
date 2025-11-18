@@ -16,8 +16,8 @@ import {
   Calendar,
 } from 'lucide-react'
 import { Database } from '@/integrations/supabase/types'
-import { TutoringReviewsDialog } from '@/components/TutoringReviewsDialog'
-import EnrolledStudentsDialog from '@/components/EnrolledStudentsDialog'
+import { TutoringReviewsDialog } from '@/components/reviews/TutoringReviewsDialog'
+import EnrolledStudentsDialog from '@/components//tutoring/EnrolledStudentsDialog'
 import { UseMutationResult } from '@tanstack/react-query'
 
 type Tutoring = Database['public']['Tables']['tutorings']['Row']

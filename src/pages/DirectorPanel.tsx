@@ -10,9 +10,9 @@ import {
   type TutoringWithProfile,
   type TutorApplicationWithProfile,
 } from '@/lib/api'
-import { TutoringReviewCard } from '@/components/TutoringReviewCard'
-import { ApplicationReviewCard } from '@/components/ApplicationReviewCard'
-import { ReviewSection } from '@/components/ReviewSection'
+import { TutoringReviewCard } from '@/components/reviews/TutoringReviewCard'
+import { ApplicationReviewCard } from '@/components/application/ApplicationReviewCard'
+import { ReviewSection } from '@/components/reviews/ReviewSection'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 const DirectorPanel = () => {

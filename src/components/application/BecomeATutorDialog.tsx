@@ -16,9 +16,9 @@ import { CalendarIcon, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format, isBefore } from 'date-fns'
-import { Calendar } from './ui/calendar'
+import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
 
 const BecomeATutorDialog = () => {

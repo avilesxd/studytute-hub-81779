@@ -13,7 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
-import Header from '@/components/Header'
+import Header from '@/components/layout/Header'
 
 const Auth = () => {
   const navigate = useNavigate()

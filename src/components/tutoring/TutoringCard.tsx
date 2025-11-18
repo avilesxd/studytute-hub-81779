@@ -16,7 +16,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
 import { FormatDate } from '@/utils/formatDate'
-import { ReviewDialog } from './ReviewDialog'
+import { ReviewDialog } from '@/components/reviews/ReviewDialog'
 
 interface TutoringCardProps {
   id: string

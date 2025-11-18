@@ -1,6 +1,6 @@
 import { Menu, Bell, LogOut, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { CalendarSheet } from '@/components/CalendarSheet'
+import { CalendarSheet } from '@/components/layout/CalendarSheet'
 import {
   Sheet,
   SheetContent,
