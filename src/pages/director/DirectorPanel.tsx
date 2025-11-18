@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth/AuthContext'
 import { toast } from 'sonner'
 import {
   useTutoringsData,
   useApplicationsData,
-} from '@/hooks/useDirectorQueries'
+} from '@/hooks/queries/useDirectorQueries'
 import {
   type TutoringWithProfile,
   type TutorApplicationWithProfile,

@@ -10,7 +10,7 @@ import {
 import { supabase } from '@/integrations/supabase/client'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth/AuthContext'
 import { isSameDay } from 'date-fns'
 
 interface CalendarEntry {

@@ -5,7 +5,7 @@ import ApplyAsTutorDialog from '@/components/application/ApplyAsTutorDialog'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth/AuthContext'
 import mathTutoringImage from '@/assets/math-tutoring.jpg'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
