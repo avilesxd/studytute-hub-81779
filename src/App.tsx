@@ -6,12 +6,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from '@/contexts/AuthContext'
 import Layout from '@/components/layout/Layout'
 import Index from './pages/Index'
-import Tutoring from './pages/Tutoring'
-import Auth from './pages/Auth'
-import DirectorPanel from './pages/DirectorPanel'
+import Tutoring from './pages/tutoring/Tutoring'
+import Auth from './pages/auth/Auth'
+import DirectorPanel from './pages/director/DirectorPanel'
 import NotFound from './pages/NotFound'
-import TermsOfService from './pages/TermsOfService'
-import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsOfService from './pages/legal/TermsOfService'
+import PrivacyPolicy from './pages/legal/PrivacyPolicy'
 
 const queryClient = new QueryClient()
 
