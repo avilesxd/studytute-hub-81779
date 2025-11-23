@@ -1,4 +1,4 @@
-import { Menu, Bell, LogOut, Shield } from 'lucide-react'
+import { Menu, Bell, LogOut, Shield, User as UserIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CalendarSheet } from '@/components/layout/CalendarSheet'
 import {
@@ -8,13 +8,22 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { useAuth } from '@/contexts/auth/AuthContext'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useAuth } from '@/contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
 
 const Header = () => {
-  const { user, isDirector } = useAuth()
+  const { user, isDirector, profile } = useAuth()
   const navigate = useNavigate()
 
   const handleLogout = async () => {
@@ -51,18 +60,6 @@ const Header = () => {
       >
         Comunidad
       </a>
-      {user ? (
-        <span className='text-primary-foreground/90'>
-          {user.user_metadata?.full_name || user.email}
-        </span>
-      ) : (
-        <a
-          href='#'
-          className='text-primary-foreground/90 hover:text-primary-foreground transition-colors'
-        >
-          Mi cuenta
-        </a>
-      )}
     </nav>
   )
 
@@ -156,24 +153,48 @@ const Header = () => {
               <Bell className='h-5 w-5' />
             </Button>
             {user ? (
-              <>
-                <div className='w-10 h-10 bg-accent rounded-full flex items-center justify-center ml-2'>
-                  <span className='text-primary-foreground font-semibold'>
-                    {user.user_metadata?.full_name?.charAt(0) ||
-                      user.email?.charAt(0) ||
-                      'U'}
-                  </span>
-                </div>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='text-primary-foreground hover:bg-primary-foreground/10'
-                  onClick={handleLogout}
-                  title='Cerrar sesión'
-                >
-                  <LogOut className='h-5 w-5' />
-                </Button>
-              </>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant='ghost'
+                    className='relative h-10 w-10 rounded-full'
+                  >
+                    <Avatar className='h-10 w-10'>
+                      <AvatarImage
+                        src={profile?.avatarUrl ?? ''}
+                        alt={profile?.fullName ?? ''}
+                      />
+                      <AvatarFallback>
+                        {profile?.fullName?.charAt(0) ||
+                          user.email?.charAt(0) ||
+                          'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className='w-56' align='end' forceMount>
+                  <DropdownMenuLabel className='font-normal'>
+                    <div className='flex flex-col space-y-1'>
+                      <p className='text-sm font-medium leading-none'>
+                        {profile?.fullName}
+                      </p>
+                      <p className='text-xs leading-none text-muted-foreground'>
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/perfil')}>
+                    <UserIcon className='mr-2 h-4 w-4' />
+                    <span>Mi perfil</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className='mr-2 h-4 w-4' />
+                    <span>Cerrar sesión</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <Button
                 variant='secondary'

@@ -12,6 +12,7 @@ import DirectorPanel from './pages/director/DirectorPanel'
 import NotFound from './pages/NotFound'
 import TermsOfService from './pages/legal/TermsOfService'
 import PrivacyPolicy from './pages/legal/PrivacyPolicy'
+import Profile from './pages/Profile'
 
 const queryClient = new QueryClient()
 
@@ -47,6 +48,14 @@ const App = () => (
               element={
                 <Layout>
                   <DirectorPanel />
+                </Layout>
+              }
+            />
+            <Route
+              path='/perfil'
+              element={
+                <Layout>
+                  <Profile />
                 </Layout>
               }
             />

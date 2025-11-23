@@ -1,22 +1,27 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
+import { Profile } from '@/types'
 
 interface AuthContextType {
   user: User | null
   session: Session | null
+  profile: Profile | null
   isDirector: boolean
   isApprovedTutor: boolean
   applicationStatus: 'pending' | 'approved' | 'rejected' | null
   isLoading: boolean
+  updateProfile: (profile: Partial<Profile>) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
+  profile: null,
   isDirector: false,
   isApprovedTutor: false,
   isLoading: true,
+  updateProfile: async () => {}
 })
 
 /**
@@ -45,6 +50,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [isDirector, setIsDirector] = useState(false)
   const [isApprovedTutor, setIsApprovedTutor] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -61,10 +67,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (session?.user) {
         setTimeout(() => {
           checkUserRoles(session.user.id)
+          getProfile(session.user.id)
         }, 0)
       } else {
         setIsDirector(false)
         setIsApprovedTutor(false)
+        setProfile(null)
         setIsLoading(false)
       }
     })
@@ -76,6 +84,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (session?.user) {
         checkUserRoles(session.user.id)
+        getProfile(session.user.id)
       } else {
         setIsLoading(false)
       }
@@ -114,9 +123,78 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
+  const getProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url, major')
+        .eq('id', userId)
+        .single()
+
+      if (error) {
+        throw error
+      }
+
+      if (data) {
+        setProfile({
+          fullName: data.full_name,
+          avatarUrl: data.avatar_url,
+          major: data.major
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+    }
+  }
+
+  const updateProfile = async (profile: Partial<Profile>) => {
+    if (!user) {
+      return
+    }
+
+    try {
+      const updateData: {
+        full_name?: string
+        avatar_url?: string
+        major?: string
+      } = {}
+
+      if (profile.fullName !== undefined) {
+        updateData.full_name = profile.fullName
+      }
+      if (profile.avatarUrl !== undefined) {
+        updateData.avatar_url = profile.avatarUrl
+      }
+      if (profile.major !== undefined) {
+        updateData.major = profile.major
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updateData)
+        .eq('id', user.id)
+
+      if (error) {
+        throw error
+      }
+
+      await getProfile(user.id)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+    }
+  }
+
   return (
     <AuthContext.Provider
-      value={{ user, session, isDirector, isApprovedTutor, isLoading }}
+      value={{
+        user,
+        session,
+        profile,
+        isDirector,
+        isApprovedTutor,
+        isLoading,
+        updateProfile
+      }}
     >
       {children}
     </AuthContext.Provider>
