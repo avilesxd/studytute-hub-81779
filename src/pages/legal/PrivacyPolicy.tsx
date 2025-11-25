@@ -94,8 +94,7 @@ const PrivacyPolicy = () => {
         <li>Oponerse al procesamiento de su información personal.</li>
       </ul>
       <p>
-        Para ejercer estos derechos, póngase en contacto con nosotros en [correo
-        electrónico de contacto].
+        Para ejercer estos derechos, póngase en contacto con nosotros en director@uarica.cl.
       </p>
 
       <h2>7. Cambios a esta Política de Privacidad</h2>
