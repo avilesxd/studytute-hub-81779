@@ -28,7 +28,7 @@ Si deseas ejecutar este proyecto en tu entorno local, sigue estos pasos:
 1. **Clona el repositorio**
 
    ```sh
-   git clone https://github.com/avilesxd/studytute-hub-81779 > tutorias-para-estudiantes
+   git clone https://github.com/avilesxd/studytute-hub-81779  tutorias-para-estudiantes
    ```
 
 2. **Navega al directorio del proyecto**
@@ -50,7 +50,7 @@ Si deseas ejecutar este proyecto en tu entorno local, sigue estos pasos:
    npm run dev
    ```
 
-   Abre [http://localhost:5173](http://localhost:5173) en tu navegador para ver la aplicación.
+   Abre [http://localhost:8080](http://localhost:8080) en tu navegador para ver la aplicación.
 
 ## Despliegue
 
