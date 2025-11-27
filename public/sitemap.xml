@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    
+    <url>
+        <loc>https://tutoriasentreestudiantes.vercel.app/</loc>
+        <lastmod>2025-11-27T04:35:33.504Z</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://tutoriasentreestudiantes.vercel.app/profile</loc>
+        <lastmod>2025-11-27T04:35:33.505Z</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://tutoriasentreestudiantes.vercel.app/auth</loc>
+        <lastmod>2025-11-27T04:35:33.505Z</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://tutoriasentreestudiantes.vercel.app/director</loc>
+        <lastmod>2025-11-27T04:35:33.505Z</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://tutoriasentreestudiantes.vercel.app/legal/privacy-policy</loc>
+        <lastmod>2025-11-27T04:35:33.505Z</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://tutoriasentreestudiantes.vercel.app/legal/terms-of-service</loc>
+        <lastmod>2025-11-27T04:35:33.505Z</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://tutoriasentreestudiantes.vercel.app/tutoring</loc>
+        <lastmod>2025-11-27T04:35:33.505Z</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+</urlset>
