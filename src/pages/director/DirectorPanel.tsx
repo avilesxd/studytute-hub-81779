@@ -34,6 +34,7 @@ const DirectorPanel = () => {
     isError: applicationsError,
     error: applicationsErrorMsg,
     updateStatus: updateApplicationStatus,
+    updateNotified,
     delete: deleteApplication,
   } = useApplicationsData(isDirector, user)
 
@@ -72,16 +73,16 @@ const DirectorPanel = () => {
 
   if (authLoading || tutoringsLoading || applicationsLoading) {
     return (
-      <div className='container mx-auto px-4 py-8'>
-        <p className='text-center text-muted-foreground'>Cargando...</p>
+      <div className="container mx-auto px-4 py-8">
+        <p className="text-center text-muted-foreground">Cargando...</p>
       </div>
     )
   }
 
   if (tutoringsError || applicationsError) {
     return (
-      <div className='container mx-auto px-4 py-8 text-center'>
-        <p className='text-red-500'>
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p className="text-red-500">
           Error al cargar los datos:{' '}
           {tutoringsErrorMsg?.message || applicationsErrorMsg?.message}
         </p>
@@ -91,21 +92,21 @@ const DirectorPanel = () => {
 
   return (
     <>
-      <h1 className='text-4xl font-bold text-primary mb-8'>
+      <h1 className="text-4xl font-bold text-primary mb-8">
         Panel del Director
       </h1>
 
-      <Tabs defaultValue='tutorings'>
-        <TabsList className='grid w-full grid-cols-2'>
-          <TabsTrigger value='tutorings'>Tutorías</TabsTrigger>
-          <TabsTrigger value='applications'>Postulaciones</TabsTrigger>
+      <Tabs defaultValue="tutorings">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="tutorings">Tutorías</TabsTrigger>
+          <TabsTrigger value="applications">Postulaciones</TabsTrigger>
         </TabsList>
-        <TabsContent value='tutorings'>
-          <div className='space-y-8 mt-6'>
+        <TabsContent value="tutorings">
+          <div className="space-y-8 mt-6">
             <ReviewSection
               title={`Tutorías Pendientes (${pendingTutorings.length})`}
               items={pendingTutorings}
-              emptyMessage='No hay tutorías pendientes de aprobación'
+              emptyMessage="No hay tutorías pendientes de aprobación"
               renderItem={(tutoring: TutoringWithProfile) => (
                 <TutoringReviewCard
                   key={tutoring.id}
@@ -118,7 +119,7 @@ const DirectorPanel = () => {
             <ReviewSection
               title={`Tutorías Aprobadas (${approvedTutorings.length})`}
               items={approvedTutorings}
-              emptyMessage='No hay tutorías aprobadas'
+              emptyMessage="No hay tutorías aprobadas"
               renderItem={(tutoring: TutoringWithProfile) => (
                 <TutoringReviewCard
                   key={tutoring.id}
@@ -131,7 +132,7 @@ const DirectorPanel = () => {
             <ReviewSection
               title={`Tutorías Rechazadas (${rejectedTutorings.length})`}
               items={rejectedTutorings}
-              emptyMessage='No hay tutorías rechazadas'
+              emptyMessage="No hay tutorías rechazadas"
               renderItem={(tutoring: TutoringWithProfile) => (
                 <TutoringReviewCard
                   key={tutoring.id}
@@ -143,12 +144,12 @@ const DirectorPanel = () => {
             />
           </div>
         </TabsContent>
-        <TabsContent value='applications'>
-          <div className='space-y-8 mt-6'>
+        <TabsContent value="applications">
+          <div className="space-y-8 mt-6">
             <ReviewSection
               title={`Postulaciones de Tutores Pendientes (${pendingApplications.length})`}
               items={pendingApplications}
-              emptyMessage='No hay postulaciones pendientes de revisión'
+              emptyMessage="No hay postulaciones pendientes de revisión"
               renderItem={(app: TutorApplicationWithProfile) => (
                 <ApplicationReviewCard
                   key={app.id}
@@ -161,7 +162,7 @@ const DirectorPanel = () => {
             <ReviewSection
               title={`Postulaciones Aprobadas (${approvedApplications.length})`}
               items={approvedApplications}
-              emptyMessage='No hay postulaciones aprobadas'
+              emptyMessage="No hay postulaciones aprobadas"
               renderItem={(app: TutorApplicationWithProfile) => (
                 <ApplicationReviewCard
                   key={app.id}
@@ -174,7 +175,7 @@ const DirectorPanel = () => {
             <ReviewSection
               title={`Postulaciones Rechazadas (${rejectedApplications.length})`}
               items={rejectedApplications}
-              emptyMessage='No hay postulaciones rechazadas'
+              emptyMessage="No hay postulaciones rechazadas"
               renderItem={(app: TutorApplicationWithProfile) => (
                 <ApplicationReviewCard
                   key={app.id}

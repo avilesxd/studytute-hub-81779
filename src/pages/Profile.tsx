@@ -14,9 +14,10 @@ import { useEffect, useState, useRef } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
+import ApplicationHistory from '@/components/application/ApplicationHistory'
 
 export default function Profile() {
-  const { profile, updateProfile, user } = useAuth()
+  const { profile, updateProfile, user, isDirector } = useAuth()
   const [fullName, setFullName] = useState('')
   const [major, setMajor] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -86,78 +87,86 @@ export default function Profile() {
   }
 
   return (
-    <div className='flex justify-center'>
-      <Card className='w-full max-w-2xl'>
-        <CardHeader>
-          <CardTitle>Perfil</CardTitle>
-          <CardDescription>Aquí puedes ver y editar tus datos.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className='grid gap-6'>
-            <div className='flex items-center gap-4'>
-              <Avatar className='h-20 w-20'>
-                <AvatarImage
-                  src={profile?.avatarUrl ?? ''}
-                  alt={profile?.fullName ?? ''}
+    <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+      <div className='md:col-span-1'>
+        <Card>
+          <CardHeader>
+            <CardTitle>Perfil</CardTitle>
+            <CardDescription>
+              Aquí puedes ver y editar tus datos.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className='grid gap-6'>
+              <div className='flex items-center gap-4'>
+                <Avatar className='h-20 w-20'>
+                  <AvatarImage
+                    src={profile?.avatarUrl ?? ''}
+                    alt={profile?.fullName ?? ''}
+                  />
+                  <AvatarFallback>
+                    {profile?.fullName?.charAt(0) ||
+                      user?.email?.charAt(0) ||
+                      'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <Button
+                  type='button'
+                  onClick={handleAvatarClick}
+                  disabled={isUploading}
+                >
+                  {isUploading ? 'Subiendo...' : 'Cambiar foto'}
+                </Button>
+                <input
+                  type='file'
+                  ref={fileInputRef}
+                  className='hidden'
+                  accept='image/*'
+                  onChange={handleFileChange}
                 />
-                <AvatarFallback>
-                  {profile?.fullName?.charAt(0) ||
-                    user?.email?.charAt(0) ||
-                    'U'}
-                </AvatarFallback>
-              </Avatar>
-              <Button
-                type='button'
-                onClick={handleAvatarClick}
-                disabled={isUploading}
-              >
-                {isUploading ? 'Subiendo...' : 'Cambiar foto'}
-              </Button>
-              <input
-                type='file'
-                ref={fileInputRef}
-                className='hidden'
-                accept='image/*'
-                onChange={handleFileChange}
-              />
-            </div>
-            <div className='grid gap-2'>
-              <Label htmlFor='full-name'>Nombre completo</Label>
-              <Input
-                id='full-name'
-                placeholder='Ingresa tu nombre completo'
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-            </div>
-            <div className='grid gap-2'>
-              <Label htmlFor='email'>Correo electrónico</Label>
-              <Input
-                id='email'
-                type='email'
-                placeholder='Ingresa tu correo electrónico'
-                value={user?.email || ''}
-                disabled
-              />
-            </div>
-            <div className='grid gap-2'>
-              <Label htmlFor='major'>Carrera</Label>
-              <Input
-                id='major'
-                placeholder='Ingresa tu carrera'
-                value={major}
-                onChange={(e) => setMajor(e.target.value)}
-              />
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className='border-t px-6 py-4'>
-          <Button onClick={handleSaveChanges} disabled={isLoading}>
-            {isLoading ? 'Guardando...' : 'Guardar cambios'}
-          </Button>
-        </CardFooter>
-      </Card>
-      .
+              </div>
+              <div className='grid gap-2'>
+                <Label htmlFor='full-name'>Nombre completo</Label>
+                <Input
+                  id='full-name'
+                  placeholder='Ingresa tu nombre completo'
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
+              </div>
+              <div className='grid gap-2'>
+                <Label htmlFor='email'>Correo electrónico</Label>
+                <Input
+                  id='email'
+                  type='email'
+                  placeholder='Ingresa tu correo electrónico'
+                  value={user?.email || ''}
+                  disabled
+                />
+              </div>
+              <div className='grid gap-2'>
+                <Label htmlFor='major'>Carrera</Label>
+                <Input
+                  id='major'
+                  placeholder='Ingresa tu carrera'
+                  value={major}
+                  onChange={(e) => setMajor(e.target.value)}
+                />
+              </div>
+            </form>
+          </CardContent>
+          <CardFooter className='border-t px-6 py-4'>
+            <Button onClick={handleSaveChanges} disabled={isLoading}>
+              {isLoading ? 'Guardando...' : 'Guardar cambios'}
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+      {!isDirector && (
+        <div className='md:col-span-2'>
+          <ApplicationHistory />
+        </div>
+      )}
     </div>
   )
 }

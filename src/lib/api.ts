@@ -43,3 +43,13 @@ export const fetchApplications = async () => {
   if (error) throw error
   return (data as TutorApplicationWithProfile[]) || []
 }
+
+/**
+ * Retrieves the tutor applications for the current user from the database.
+ * @returns An array of tutor applications.
+ */
+export const getUserApplications = async () => {
+  const { data, error } = await supabase.from('tutor_applications').select('*')
+  if (error) throw error
+  return (data as TutorApplication[]) || []
+}

@@ -100,19 +100,48 @@ export function useApplicationsData(isDirector: boolean, user: any) {
     mutationFn: async ({
       id,
       status,
+      rejection_reason,
     }: {
       id: string
       status: Database['public']['Enums']['tutor_application_status']
+      rejection_reason?: string
     }) => {
+      // First, get the application to get the user_id
+      const { data: application, error: fetchError } = await supabase
+        .from('tutor_applications')
+        .select('user_id')
+        .eq('id', id)
+        .single()
+
+      if (fetchError) throw fetchError
+
       const { error } = await supabase
         .from('tutor_applications')
         .update({
           status,
+          rejection_reason,
           reviewed_by: user?.id,
           reviewed_at: new Date().toISOString(),
         })
         .eq('id', id)
       if (error) throw error
+
+      // If rejected, create a notification
+      if (status === 'rejected' && application?.user_id) {
+        const { error: notificationError } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: application.user_id,
+            message: `Tu postulación para ser tutor ha sido rechazada. Motivo: ${
+              rejection_reason || 'No especificado'
+            }`,
+            link: '/perfil',
+          })
+        if (notificationError) {
+          console.error('Error creating notification:', notificationError)
+          // Don't block the main flow if notification fails
+        }
+      }
     },
     onSuccess: (_, { status }) => {
       toast.success(
@@ -121,11 +150,30 @@ export function useApplicationsData(isDirector: boolean, user: any) {
           : 'Postulación rechazada',
       )
       queryClient.invalidateQueries({ queryKey: ['applications'] })
+      if (status === 'rejected') {
+        queryClient.invalidateQueries({ queryKey: ['notifications'] })
+      }
     },
     onError: (error: any) => {
       toast.error('Error al actualizar el estado', {
         description: error.message,
       })
+    },
+  })
+
+  const updateNotifiedMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('tutor_applications')
+        .update({ notified: true })
+        .eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
+    },
+    onError: (error: any) => {
+      console.error('Error al actualizar el estado de la notificación', error)
     },
   })
 
@@ -154,6 +202,7 @@ export function useApplicationsData(isDirector: boolean, user: any) {
     isError,
     error,
     updateStatus: updateStatusMutation,
+    updateNotified: updateNotifiedMutation,
     delete: deleteMutation,
   }
 }

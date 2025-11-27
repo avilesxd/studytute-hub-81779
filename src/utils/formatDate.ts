@@ -1,9 +1,12 @@
 /**
- * The `FormatDate` function takes a date in "yyyy-mm-dd" format and returns it in "dd-mm-yyyy" format.
- * @param {string} dateBD - The `dateBD` parameter is a string representing a date in the format "YYYY-MM-DD".
- * @returns The `FormatDate` function takes a date string in the format "YYYY-MM-DD" and returns the date formatted as "DD-MM-YYYY".
+ * The `FormatDate` function takes a date string and returns it in "dd-mm-yyyy" format.
+ * @param {string} dateString - The `dateString` parameter is a string representing a date.
+ * @returns The date formatted as "DD-MM-YYYY".
  */
-export const FormatDate = (dateBD: string): string => {
-  const [year, month, day] = dateBD.split('-')
+export const FormatDate = (dateString: string): string => {
+  const date = new Date(dateString)
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0') // Month is 0-indexed
+  const year = date.getFullYear()
   return `${day}-${month}-${year}`
 }

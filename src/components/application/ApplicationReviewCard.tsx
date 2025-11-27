@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge'
 import { Mail, Phone, GraduationCap, Clock } from 'lucide-react'
 import { Database } from '@/integrations/supabase/types'
 import { UseMutationResult } from '@tanstack/react-query'
+import { useState } from 'react'
+import { RejectApplicationDialog } from './RejectApplicationDialog'
 
 type TutorApplication =
   Database['public']['Tables']['tutor_applications']['Row']
@@ -22,6 +24,7 @@ type ApplicationReviewCardProps = {
     {
       id: string
       status: Database['public']['Enums']['tutor_application_status']
+      rejection_reason?: string
     },
     unknown
   >
@@ -32,103 +35,130 @@ export const ApplicationReviewCard = ({
   application,
   updateStatusMutation,
   deleteMutation,
-}: ApplicationReviewCardProps) => (
-  <Card key={application.id} className='overflow-hidden'>
-    <CardHeader>
-      <div className='flex items-start justify-between'>
-        <div>
-          <CardTitle className='text-xl mb-1'>
-            {application.profiles?.full_name}
-          </CardTitle>
-          <p className='text-sm text-muted-foreground'>{application.subject}</p>
-        </div>
-        <Badge
-          variant={
-            application.status === 'pending'
-              ? 'secondary'
-              : application.status === 'approved'
-                ? 'default'
-                : 'destructive'
-          }
-        >
-          {application.status === 'pending'
-            ? 'Pendiente'
-            : application.status === 'approved'
-              ? 'Aprobada'
-              : 'Rechazada'}
-        </Badge>
-      </div>
-    </CardHeader>
+}: ApplicationReviewCardProps) => {
+  const [isRejectDialogOpen, setRejectDialogOpen] = useState(false)
 
-    <CardContent className='space-y-3'>
-      <div className='flex items-center gap-2 text-sm'>
-        <Mail className='h-4 w-4 text-primary' />
-        <span>{application.email}</span>
-      </div>
-      {application.phone && (
-        <div className='flex items-center gap-2 text-sm'>
-          <Phone className='h-4 w-4 text-primary' />
-          <span>{application.phone}</span>
-        </div>
-      )}
-      {application.availability && application.availability.length > 0 && (
-        <div className='flex items-center gap-2 text-sm'>
-          <Clock className='h-4 w-4 text-primary' />
-          <span className='text-muted-foreground'>Disponibilidad:</span>
-          <span>{application.availability.join(', ')}</span>
-        </div>
-      )}
-      <div className='flex items-start gap-2 text-sm'>
-        <GraduationCap className='h-4 w-4 text-primary mt-0.5' />
-        <div className='flex-1'>
-          <p className='text-muted-foreground mb-1 text-xs'>Experiencia:</p>
-          <p className='text-sm'>{application.experience}</p>
-        </div>
-      </div>
-      <div className='pt-2 border-t'>
-        <p className='text-muted-foreground mb-1 text-xs'>Motivación:</p>
-        <p className='text-sm'>{application.motivation}</p>
-      </div>
-    </CardContent>
+  const handleReject = (rejection_reason: string) => {
+    updateStatusMutation.mutate({
+      id: application.id,
+      status: 'rejected',
+      rejection_reason,
+    })
+  }
 
-    <CardFooter className='gap-2'>
-      {application.status === 'pending' && (
-        <>
+  return (
+    <>
+      <Card key={application.id} className="overflow-hidden">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-xl mb-1">
+                {application.profiles?.full_name}
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {application.subject}
+              </p>
+            </div>
+            <Badge
+              variant={
+                application.status === 'pending'
+                  ? 'secondary'
+                  : application.status === 'approved'
+                  ? 'default'
+                  : 'destructive'
+              }
+            >
+              {application.status === 'pending'
+                ? 'Pendiente'
+                : application.status === 'approved'
+                ? 'Aprobada'
+                : 'Rechazada'}
+            </Badge>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-3">
+          <div className="flex items-center gap-2 text-sm">
+            <Mail className="h-4 w-4 text-primary" />
+            <span>{application.email}</span>
+          </div>
+          {application.phone && (
+            <div className="flex items-center gap-2 text-sm">
+              <Phone className="h-4 w-4 text-primary" />
+              <span>{application.phone}</span>
+            </div>
+          )}
+          {application.availability && application.availability.length > 0 && (
+            <div className="flex items-center gap-2 text-sm">
+              <Clock className="h-4 w-4 text-primary" />
+              <span className="text-muted-foreground">Disponibilidad:</span>
+              <span>{application.availability.join(', ')}</span>
+            </div>
+          )}
+          <div className="flex items-start gap-2 text-sm">
+            <GraduationCap className="h-4 w-4 text-primary mt-0.5" />
+            <div className="flex-1">
+              <p className="text-muted-foreground mb-1 text-xs">
+                Experiencia:
+              </p>
+              <p className="text-sm">{application.experience}</p>
+            </div>
+          </div>
+          <div className="pt-2 border-t">
+            <p className="text-muted-foreground mb-1 text-xs">Motivación:</p>
+            <p className="text-sm">{application.motivation}</p>
+          </div>
+          {application.status === 'rejected' &&
+            application.rejection_reason && (
+              <div className="pt-2 border-t">
+                <p className="text-muted-foreground mb-1 text-xs">
+                  Motivo del rechazo:
+                </p>
+                <p className="text-sm">{application.rejection_reason}</p>
+              </div>
+            )}
+        </CardContent>
+
+        <CardFooter className="gap-2">
+          {application.status === 'pending' && (
+            <>
+              <Button
+                onClick={() =>
+                  updateStatusMutation.mutate({
+                    id: application.id,
+                    status: 'approved',
+                  })
+                }
+                className="flex-1 bg-gradient-to-r from-primary to-secondary"
+                disabled={updateStatusMutation.isPending}
+              >
+                Aprobar
+              </Button>
+              <Button
+                onClick={() => setRejectDialogOpen(true)}
+                variant="destructive"
+                className="flex-1"
+                disabled={updateStatusMutation.isPending}
+              >
+                Rechazar
+              </Button>
+            </>
+          )}
           <Button
-            onClick={() =>
-              updateStatusMutation.mutate({
-                id: application.id,
-                status: 'approved',
-              })
-            }
-            className='flex-1 bg-gradient-to-r from-primary to-secondary'
-            disabled={updateStatusMutation.isPending}
+            onClick={() => deleteMutation.mutate(application.id)}
+            variant="destructive"
+            className="flex-1"
+            disabled={deleteMutation.isPending}
           >
-            Aprobar
+            Eliminar
           </Button>
-          <Button
-            onClick={() =>
-              updateStatusMutation.mutate({
-                id: application.id,
-                status: 'rejected',
-              })
-            }
-            variant='destructive'
-            className='flex-1'
-            disabled={updateStatusMutation.isPending}
-          >
-            Rechazar
-          </Button>
-        </>
-      )}
-      <Button
-        onClick={() => deleteMutation.mutate(application.id)}
-        variant='destructive'
-        className='flex-1'
-        disabled={deleteMutation.isPending}
-      >
-        Eliminar
-      </Button>
-    </CardFooter>
-  </Card>
-)
+        </CardFooter>
+      </Card>
+      <RejectApplicationDialog
+        isOpen={isRejectDialogOpen}
+        onClose={() => setRejectDialogOpen(false)}
+        onConfirm={handleReject}
+      />
+    </>
+  )
+}
